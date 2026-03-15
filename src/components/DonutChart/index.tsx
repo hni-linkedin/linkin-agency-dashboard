@@ -45,7 +45,7 @@ export function DonutChart({
 
   const segments = data.reduce<Array<{ offset: number; length: number; pct: number; label: string; value: number; color: string }>>((acc, d, i) => {
     const pct = total > 0 ? d.value / total : 0;
-    const length = pct * circumference - (i < data.length - 1 ? gap : 0);
+    const length = Math.max(0, pct * circumference - (i < data.length - 1 ? gap : 0));
     const offset = acc.length > 0 ? acc[acc.length - 1].offset + acc[acc.length - 1].length + gap : 0;
     acc.push({ ...d, offset, length, pct: pct * 100 });
     return acc;
@@ -64,10 +64,10 @@ export function DonutChart({
       }}
     >
       <div style={{ position: "relative", width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
           {segments.map((seg, i) => (
-            <motion.circle
-              key={seg.label}
+            <circle
+              key={`${seg.label}-${i}`}
               cx={cx}
               cy={cy}
               r={r}
@@ -77,14 +77,6 @@ export function DonutChart({
               strokeLinecap="round"
               strokeDasharray={`${seg.length} ${circumference}`}
               strokeDashoffset={-seg.offset}
-              initial={{ strokeDasharray: `0 ${circumference}` }}
-              animate={{ strokeDasharray: `${seg.length} ${circumference}` }}
-              transition={{
-                duration: 0.6,
-                delay: i * 0.1,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              style={{ transform: "rotate(-90deg)", transformOrigin: "center" }}
             />
           ))}
         </svg>
@@ -130,9 +122,10 @@ export function DonutChart({
       <div
         style={{
           display: "flex",
-          flexWrap: "wrap",
-          gap: "12px 16px",
+          flexWrap: "nowrap",
+          gap: "10px",
           justifyContent: "center",
+          overflowX: "auto",
         }}
       >
         {segments.map((seg) => (
@@ -141,16 +134,17 @@ export function DonutChart({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "6px",
+              gap: "4px",
               fontFamily: "var(--font-data)",
-              fontSize: "var(--text-xs-size)",
+              fontSize: "10px",
               color: "var(--text-secondary)",
+              flexShrink: 0,
             }}
           >
             <span
               style={{
-                width: "6px",
-                height: "6px",
+                width: "4px",
+                height: "4px",
                 borderRadius: "var(--r-sm)",
                 background: seg.color,
               }}

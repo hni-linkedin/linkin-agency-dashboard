@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 
-export type FreshnessStatus = "fresh" | "due" | "overdue";
+export type FreshnessStatus = "fresh" | "due" | "overdue" | "missing";
 
 const STATUS_STYLES: Record<
   FreshnessStatus,
@@ -28,6 +28,13 @@ const STATUS_STYLES: Record<
     bg: "var(--red-dim)",
     border: "var(--red-border)",
     label: "Overdue",
+  },
+  missing: {
+    dot: "var(--text-disabled)",
+    text: "var(--text-muted)",
+    bg: "var(--bg-elevated)",
+    border: "var(--border-subtle)",
+    label: "Not captured",
   },
 };
 
@@ -66,7 +73,9 @@ export function FreshnessIndicator({
         ? `${styles.label} · Capture today`
         : status === "overdue" && daysUntilDue != null
           ? `${styles.label} · ${daysUntilDue} days late`
-          : styles.label;
+          : status === "missing"
+            ? styles.label
+            : styles.label;
 
   if (compact) {
     return (

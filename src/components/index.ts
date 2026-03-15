@@ -73,6 +73,9 @@ export type {
   FreshnessStatus,
 } from "./FreshnessIndicator";
 
+export { FreshnessTable } from "./FreshnessTable";
+export type { FreshnessTableProps, FreshnessTableRow } from "./FreshnessTable";
+
 export { CaptureBadge } from "./CaptureBadge";
 export type {
   CaptureBadgeProps,

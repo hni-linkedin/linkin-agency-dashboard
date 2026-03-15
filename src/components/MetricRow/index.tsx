@@ -19,13 +19,11 @@ export function MetricRow({
   value,
   displayValue,
   maxValue,
-  percentage,
   rank,
   color = "var(--accent)",
   index = 0,
 }: MetricRowProps) {
   const pct = maxValue > 0 ? Math.min(100, (value / maxValue) * 100) : 0;
-  const displayPct = percentage != null ? percentage : pct;
 
   return (
     <motion.div
@@ -90,19 +88,6 @@ export function MetricRow({
           >
             {displayValue}
           </span>
-          {percentage != null || (maxValue > 0 && value > 0) ? (
-            <span
-              style={{
-                fontFamily: "var(--font-data)",
-                fontSize: "var(--text-xs-size)",
-                color: "var(--text-muted)",
-                minWidth: "32px",
-                textAlign: "right",
-              }}
-            >
-              {displayPct.toFixed(0)}%
-            </span>
-          ) : null}
         </div>
       </div>
       <div
