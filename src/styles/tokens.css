@@ -9,14 +9,15 @@
 :root {
   /* Fonts */
   --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-display-outfit: "Outfit", system-ui, sans-serif;
   --font-data: "Geist Mono", "Courier New", monospace;
 
-  /* Surfaces */
-  --bg-base: #07090f;
-  --bg-surface: #0c1018;
-  --bg-card: #111622;
-  --bg-elevated: #161d2e;
-  --bg-overlay: #1b2338;
+  /* Surfaces — slightly lifted for less heavy dark feel */
+  --bg-base: #0d1117;
+  --bg-surface: #141b24;
+  --bg-card: #1a2232;
+  --bg-elevated: #1f2937;
+  --bg-overlay: #252f42;
 
   /* Brand accent */
   --accent: #2d7fe8;
@@ -40,15 +41,15 @@
   --red-border: rgba(232, 64, 64, 0.2);
 
   /* Text ramp */
-  --text-primary: #eef2ff;
-  --text-secondary: #7e8fa8;
-  --text-muted: #3d4b5e;
-  --text-disabled: #252d3a;
+  --text-primary: #f0f4fb;
+  --text-secondary: #8b9cb5;
+  --text-muted: #4d5d73;
+  --text-disabled: #2d3748;
 
   /* Borders — PATCH 1: dashed default; solid via box-shadow on hover/focus */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
   --border-accent: rgba(45, 127, 232, 0.45);
   --border-focus: rgba(45, 127, 232, 0.7);
 
@@ -62,6 +63,7 @@
   --shadow-accent: 0 0 12px rgba(45, 127, 232, 0.25);
   --shadow-green: 0 0 10px rgba(34, 199, 135, 0.2);
   --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   /* Chart — multi-series */
   --chart-impressions: #2d7fe8;
@@ -171,4 +173,16 @@
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
