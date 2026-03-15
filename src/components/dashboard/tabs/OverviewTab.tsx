@@ -468,7 +468,6 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
                           ? -(item.stat.deltaNumeric ?? 0)
                           : item.stat.deltaNumeric ?? undefined
                     }
-                    deltaLabel={item.stat.delta ?? undefined}
                   />
                 ) : (
                   <article

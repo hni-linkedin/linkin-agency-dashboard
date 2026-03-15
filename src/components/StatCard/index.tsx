@@ -64,6 +64,7 @@ export interface StatCardProps {
   label: string;
   value: string | number;
   delta?: number;
+  /** Not rendered; kept for API compatibility. Delta pill shows the value. */
   deltaLabel?: string;
   trend?: number[];
   loading?: boolean;
@@ -74,7 +75,6 @@ export function StatCard({
   label,
   value,
   delta,
-  deltaLabel,
   trend,
   loading = false,
   onClick,
@@ -141,27 +141,9 @@ export function StatCard({
         </div>
       )}
 
-      {(delta != null || deltaLabel) && !loading && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            marginTop: "8px",
-          }}
-        >
-          {delta != null && <DeltaBadge value={delta} size="md" />}
-          {deltaLabel && (
-            <span
-              style={{
-                fontFamily: "var(--font-data)",
-                fontSize: "var(--text-xs-size)",
-                color: "var(--text-muted)",
-              }}
-            >
-              {deltaLabel}
-            </span>
-          )}
+      {delta != null && !loading && (
+        <div style={{ marginTop: "8px" }}>
+          <DeltaBadge value={delta} size="md" />
         </div>
       )}
 

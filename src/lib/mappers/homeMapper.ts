@@ -1,4 +1,4 @@
-import { formatNumber } from "@/lib/formatters";
+import { formatNumber, formatNumberIndian } from "@/lib/formatters";
 import type {
   EngagementsSplit,
   EngagementsSummary,
@@ -122,8 +122,9 @@ function parseNum(val: string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Display for KPI cards: exact value with Indian comma separation (no K/M rounding). */
 function fmt(val: number | null): string {
-  return formatNumber(val);
+  return formatNumberIndian(val);
 }
 
 function toDirection(

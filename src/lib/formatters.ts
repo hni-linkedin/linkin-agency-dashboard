@@ -18,3 +18,12 @@ export function formatNumber(val: number | null): string {
   }
   return val.toLocaleString();
 }
+
+/**
+ * Format exact value with Indian counting system (lakhs/crores comma separation).
+ * Use in KPI cards to show full number, e.g. 7,200 or 1,00,000.
+ */
+export function formatNumberIndian(val: number | null): string {
+  if (val === null || Number.isNaN(val)) return "—";
+  return val.toLocaleString("en-IN");
+}
