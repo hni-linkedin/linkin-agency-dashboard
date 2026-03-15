@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Geist+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Geist+Mono:wght@400;500&family=Outfit:wght@500;700&display=swap");
 @import "../styles/tokens.css";
 @import "tailwindcss";
 
@@ -36,4 +36,12 @@ body {
 [data-tabular],
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Dashboard shell grid sidebar width */
+.shell-expanded {
+  --sidebar-w: 200px;
+}
+.shell-collapsed {
+  --sidebar-w: 52px;
 }
