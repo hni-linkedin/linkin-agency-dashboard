@@ -45,20 +45,18 @@ export interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const [collapsed, setCollapsed] = useState(true);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("sidebar-collapsed");
+    return stored !== null ? stored === "true" : true;
+  });
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") return "dark";
+    const stored = localStorage.getItem("la-theme") as "dark" | "light" | null;
+    return stored === "dark" || stored === "light" ? stored : "dark";
+  });
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("sidebar-collapsed");
-    if (stored !== null) setCollapsed(stored === "true");
-  }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("la-theme") as "dark" | "light" | null;
-    if (stored === "dark" || stored === "light") setTheme(stored);
-  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
