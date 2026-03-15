@@ -37,8 +37,9 @@ export function DataCard({
       className={className}
       style={{
         background: "var(--bg-card)",
-        border: "1px dashed var(--border-subtle)",
+        border: "1px dashed var(--border-card)",
         boxShadow: "0 0 0 0px transparent",
+        color: "var(--text-on-card)",
         borderRadius: "var(--r-md)",
         overflow: "hidden",
         ...(fillHeight && { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }),
@@ -50,14 +51,14 @@ export function DataCard({
         hover
           ? (e) => {
               e.currentTarget.style.borderColor = "var(--border-default)";
-              e.currentTarget.style.boxShadow = "0 0 0 1px var(--border-default)";
+              e.currentTarget.style.boxShadow = "0 0 0 1px var(--border-card)";
             }
           : undefined
       }
       onMouseLeave={
         hover
           ? (e) => {
-              e.currentTarget.style.borderColor = "var(--border-subtle)";
+              e.currentTarget.style.borderColor = "var(--border-card)";
               e.currentTarget.style.boxShadow = "0 0 0 0px transparent";
             }
           : undefined
@@ -82,7 +83,7 @@ export function DataCard({
                     fontWeight: 500,
                     fontSize: "var(--text-md-size)",
                     lineHeight: "var(--text-md-line)",
-                    color: "var(--text-primary)",
+                    color: "var(--text-on-card)",
                   }}
                 >
                   {title}
@@ -94,7 +95,7 @@ export function DataCard({
                     fontFamily: "var(--font-data)",
                     fontSize: "var(--text-sm-size)",
                     lineHeight: "var(--text-sm-line)",
-                    color: "var(--text-muted)",
+                    color: "var(--text-on-card-muted)",
                     marginTop: "2px",
                   }}
                 >
@@ -110,13 +111,14 @@ export function DataCard({
           <div
             style={{
               height: "0.5px",
-              background: "var(--border-default)",
+              background: "var(--border-card)",
               marginTop: "12px",
             }}
           />
         </>
       )}
       <div
+        data-card-content
         style={{
           padding: noPadding ? 0 : "16px 20px",
           ...(fillHeight && { flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }),
