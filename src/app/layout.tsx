@@ -2,8 +2,20 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Next App",
-  description: "Next.js with Tailwind CSS v4, TypeScript, Framer Motion & Recharts",
+  title: {
+    default: "Linkin Agency — LinkedIn analytics & capture dashboard",
+    template: "%s · Linkin Agency",
+  },
+  description:
+    "Linkin Agency helps you capture and analyze LinkedIn data — impressions, engagements, audience insights, and search appearances.",
+  keywords: ["LinkedIn", "analytics", "dashboard", "capture", "agency", "Linkin Agency"],
+  authors: [{ name: "Linkin Agency" }],
+  openGraph: {
+    title: "Linkin Agency — LinkedIn analytics & capture dashboard",
+    description:
+      "Capture and analyze LinkedIn data: impressions, engagements, audience insights, and search appearances.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
