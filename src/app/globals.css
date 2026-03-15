@@ -1,1 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Geist+Mono:wght@400;500&display=swap");
+@import "../styles/tokens.css";
 @import "tailwindcss";
+
+/* PATCH 3: Smooth theme crossfade */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
+html {
+  background: var(--bg-base);
+}
+
+body {
+  font-family: var(--font-data);
+  font-size: var(--text-sm-size);
+  line-height: var(--text-sm-line);
+  letter-spacing: var(--text-sm-tracking);
+  color: var(--text-primary);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-tabular],
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
