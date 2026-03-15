@@ -1,0 +1,174 @@
+/**
+ * Design tokens — canonical. Do not invent new colour values.
+ * Data intelligence SaaS: Bloomberg Terminal meets modern analytics.
+ * PATCH 1: Border language (dashed + box-shadow). PATCH 2: Radius scale (max 4px). PATCH 3: Light + dark themes.
+ */
+
+/* ─── DARK THEME (default) ─── */
+[data-theme="dark"],
+:root {
+  /* Fonts */
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-data: "Geist Mono", "Courier New", monospace;
+
+  /* Surfaces */
+  --bg-base: #07090f;
+  --bg-surface: #0c1018;
+  --bg-card: #111622;
+  --bg-elevated: #161d2e;
+  --bg-overlay: #1b2338;
+
+  /* Brand accent */
+  --accent: #2d7fe8;
+  --accent-hover: #4b93f0;
+  --accent-dim: rgba(45, 127, 232, 0.12);
+  --accent-glow: rgba(45, 127, 232, 0.25);
+  --accent-muted: rgba(45, 127, 232, 0.06);
+
+  /* Semantic */
+  --green: #22c787;
+  --green-dim: rgba(34, 199, 135, 0.12);
+  --green-border: rgba(34, 199, 135, 0.2);
+  --green-muted: rgba(34, 199, 135, 0.06);
+
+  --amber: #f5a623;
+  --amber-dim: rgba(245, 166, 35, 0.12);
+  --amber-border: rgba(245, 166, 35, 0.2);
+
+  --red: #e84040;
+  --red-dim: rgba(232, 64, 64, 0.12);
+  --red-border: rgba(232, 64, 64, 0.2);
+
+  /* Text ramp */
+  --text-primary: #eef2ff;
+  --text-secondary: #7e8fa8;
+  --text-muted: #3d4b5e;
+  --text-disabled: #252d3a;
+
+  /* Borders — PATCH 1: dashed default; solid via box-shadow on hover/focus */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-accent: rgba(45, 127, 232, 0.45);
+  --border-focus: rgba(45, 127, 232, 0.7);
+
+  /* Radius — PATCH 2: max 4px; only avatar/dots use full */
+  --r-none: 0;
+  --r-sm: 2px;
+  --r-md: 4px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-accent: 0 0 12px rgba(45, 127, 232, 0.25);
+  --shadow-green: 0 0 10px rgba(34, 199, 135, 0.2);
+  --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+  /* Chart — multi-series */
+  --chart-impressions: #2d7fe8;
+  --chart-engagements: #22c787;
+  --chart-reposts: #f5a623;
+  --chart-saves: #a78bfa;
+  --chart-sends: #3d4b5e;
+  --chart-grid: rgba(255, 255, 255, 0.04);
+
+  /* Type scale */
+  --text-2xs-size: 10px;
+  --text-2xs-line: 14px;
+  --text-2xs-tracking: 0.08em;
+  --text-xs-size: 11px;
+  --text-xs-line: 16px;
+  --text-xs-tracking: 0.04em;
+  --text-sm-size: 12px;
+  --text-sm-line: 18px;
+  --text-sm-tracking: 0.02em;
+  --text-base-size: 13px;
+  --text-base-line: 20px;
+  --text-base-tracking: 0.01em;
+  --text-md-size: 14px;
+  --text-md-line: 22px;
+  --text-md-tracking: 0;
+  --text-lg-size: 16px;
+  --text-lg-line: 24px;
+  --text-lg-tracking: 0;
+  --text-xl-size: 18px;
+  --text-xl-line: 26px;
+  --text-xl-tracking: 0;
+  --text-2xl-size: 22px;
+  --text-2xl-line: 30px;
+  --text-2xl-tracking: -0.02em;
+  --text-3xl-size: 28px;
+  --text-3xl-line: 36px;
+  --text-3xl-tracking: -0.03em;
+  --text-4xl-size: 36px;
+  --text-4xl-line: 44px;
+  --text-4xl-tracking: -0.04em;
+
+  /* Motion */
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-slow: 400ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── LIGHT THEME ─── */
+/* Surfaces — cool blue-tinted, not white */
+[data-theme="light"] {
+  --bg-base: #edf1f7;   /* page background — slate blue tint */
+  --bg-surface: #e4eaf4;   /* sidebar, topbar — slightly deeper */
+  --bg-card: #edf1f7;   /* cards — same as base, border defines them */
+  --bg-elevated: #d8e2f0;   /* dropdowns, nested cards — noticeably deeper */
+  --bg-overlay: #cfdaee;   /* modals, tooltips — deepest surface */
+
+  --accent: #1a6fd4;
+  --accent-hover: #2d7fe8;
+  --accent-dim: rgba(26, 111, 212, 0.08);
+  --accent-glow: rgba(26, 111, 212, 0.18);
+  --accent-muted: rgba(26, 111, 212, 0.04);
+
+  --green: #1aad75;
+  --green-dim: rgba(26, 173, 117, 0.08);
+  --green-border: rgba(26, 173, 117, 0.2);
+  --green-muted: rgba(26, 173, 117, 0.04);
+
+  --amber: #d4860a;
+  --amber-dim: rgba(212, 134, 10, 0.08);
+  --amber-border: rgba(212, 134, 10, 0.2);
+
+  --red: #c93333;
+  --red-dim: rgba(201, 51, 51, 0.08);
+  --red-border: rgba(201, 51, 51, 0.2);
+
+  --text-primary: #0e1117;
+  --text-secondary: #4a5568;
+  --text-muted: #8896a7;
+  --text-disabled: #c8d0da;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-default: rgba(0, 0, 0, 0.14);
+  --border-strong: rgba(0, 0, 0, 0.22);
+  --border-accent: rgba(26, 111, 212, 0.4);
+  --border-focus: rgba(26, 111, 212, 0.65);
+
+  --chart-impressions: #1a6fd4;
+  --chart-engagements: #1aad75;
+  --chart-reposts: #d4860a;
+  --chart-saves: #7c5cbf;
+  --chart-sends: #8896a7;
+  --chart-grid: rgba(0, 0, 0, 0.05);
+
+  --shadow-accent: 0 0 12px rgba(26, 111, 212, 0.2);
+  --shadow-green: 0 0 10px rgba(26, 173, 117, 0.15);
+  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* Shimmer keyframes */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
