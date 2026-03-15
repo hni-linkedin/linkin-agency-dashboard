@@ -12,6 +12,9 @@ export interface DataCardProps {
   loading?: boolean;
   noPadding?: boolean;
   hover?: boolean;
+  className?: string;
+  /** When true, card and body grow to fill flex parent (use with flex-1) */
+  fillHeight?: boolean;
 }
 
 export function DataCard({
@@ -23,18 +26,22 @@ export function DataCard({
   loading = false,
   noPadding = false,
   hover = false,
+  className,
+  fillHeight = false,
 }: DataCardProps) {
   const hasHeader = title != null || badge != null || action != null || description != null;
 
   return (
     <article
       data-hover={hover ? "true" : undefined}
+      className={className}
       style={{
         background: "var(--bg-card)",
         border: "1px dashed var(--border-subtle)",
         boxShadow: "0 0 0 0px transparent",
         borderRadius: "var(--r-md)",
         overflow: "hidden",
+        ...(fillHeight && { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }),
         transition: hover
           ? "border-color 150ms ease, box-shadow 150ms ease"
           : undefined,
@@ -64,7 +71,7 @@ export function DataCard({
               alignItems: "flex-start",
               justifyContent: "space-between",
               gap: "12px",
-              padding: noPadding ? "16px 24px 0" : "20px 24px 0",
+              padding: noPadding ? "12px 20px 0" : "16px 20px 0",
             }}
           >
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -104,14 +111,15 @@ export function DataCard({
             style={{
               height: "0.5px",
               background: "var(--border-default)",
-              marginTop: "16px",
+              marginTop: "12px",
             }}
           />
         </>
       )}
       <div
         style={{
-          padding: noPadding ? 0 : "20px 24px",
+          padding: noPadding ? 0 : "16px 20px",
+          ...(fillHeight && { flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }),
         }}
       >
         {loading ? (

@@ -54,7 +54,7 @@ export function InsightCallout({
         style={{
           borderLeft: "3px solid var(--border-default)",
           borderRadius: "0 var(--r-md) var(--r-md) 0",
-          padding: "12px 16px",
+          padding: "10px 12px",
           background: "var(--bg-elevated)",
         }}
       >
@@ -81,7 +81,7 @@ export function InsightCallout({
             letterSpacing: "0.08em",
             textTransform: "uppercase",
             color: styles.labelColor,
-            marginBottom: "6px",
+            marginBottom: "4px",
           }}
         >
           {displayLabel}

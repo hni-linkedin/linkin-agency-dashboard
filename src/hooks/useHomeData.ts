@@ -25,15 +25,19 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
 
   useEffect(() => {
     if (clientId === null || clientId === "") {
-      setStatus("idle");
-      setData(null);
-      setError(null);
-      return;
+      const id = setTimeout(() => {
+        setStatus("idle");
+        setData(null);
+        setError(null);
+      }, 0);
+      return () => clearTimeout(id);
     }
 
     let ignore = false;
-    setError(null);
-    setStatus("loading");
+    const id = setTimeout(() => {
+      setError(null);
+      setStatus("loading");
+    }, 0);
 
     getHomeData(clientId)
       .then((raw) => {
@@ -52,6 +56,7 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
       });
 
     return () => {
+      clearTimeout(id);
       ignore = true;
     };
   }, [clientId]);

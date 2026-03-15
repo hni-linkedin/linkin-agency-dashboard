@@ -45,19 +45,20 @@ export interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 767px)");
+  // Fixed initial state so server and client match (avoids hydration error). Synced from localStorage in useEffect.
   const [collapsed, setCollapsed] = useState(true);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  // Restore sidebar/theme from localStorage after mount to avoid server/client HTML mismatch (hydration).
   useEffect(() => {
-    const stored = localStorage.getItem("sidebar-collapsed");
-    if (stored !== null) setCollapsed(stored === "true");
-  }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("la-theme") as "dark" | "light" | null;
-    if (stored === "dark" || stored === "light") setTheme(stored);
+    /* eslint-disable react-hooks/set-state-in-effect -- sync from localStorage after hydration only */
+    const storedCollapsed = localStorage.getItem("sidebar-collapsed");
+    if (storedCollapsed !== null) setCollapsed(storedCollapsed === "true");
+    const storedTheme = localStorage.getItem("la-theme") as "dark" | "light" | null;
+    if (storedTheme === "dark" || storedTheme === "light") setTheme(storedTheme);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   useEffect(() => {

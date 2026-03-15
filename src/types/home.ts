@@ -25,10 +25,16 @@ export type HomeSummary = {
   impressions7d: ImpressionsSummary | null;
   impressions28d: ImpressionsSummary | null;
   impressions90d: ImpressionsSummary | null;
+  engagements7d?: EngagementsSummary | null;
   engagements28d: EngagementsSummary | null;
+  engagements90d?: EngagementsSummary | null;
   audience: AudienceData | null;
+  audience7d?: AudienceData | null;
+  audience28d?: AudienceData | null;
+  audience90d?: AudienceData | null;
   search: SearchData | null;
   profileViews: ProfileViewsData | null;
+  topPosts?: TopPost[] | null;
   lastCapturedAt: string;
 };
 
@@ -38,16 +44,28 @@ export type ImpressionsSummary = {
   totalImpression: string;
   deltaChange: string | null;
   deltaColor: "green" | "red" | null;
-  top_posts: TopPost[];
+  top_posts?: TopPost[];
+  impressions?: { totalImpression: string; deltaChange: string | null; deltaColor: "green" | "red" | null };
+  members?: { totalMembersReached: string; deltaChange?: string | null; deltaColor?: "green" | "red" | null };
 };
 
 // ── Engagements summary ──────────────────────────────
+
+export type EngagementsSplit = {
+  reactions: string;
+  comments: string;
+  reposts: string;
+  saves: string;
+  sendsOnLinkedIn: string;
+};
 
 export type EngagementsSummary = {
   totalEngagements: string;
   deltaChange: string | null;
   deltaColor: "green" | "red" | null;
-  top_posts: TopPost[];
+  top_posts?: TopPost[];
+  engagements_split?: EngagementsSplit;
+  visitsToLinks?: string | null;
 };
 
 // ── Top post (shared by impressions and engagements) ──
@@ -79,17 +97,35 @@ export type ProfileData = {
 
 // ── Audience ─────────────────────────────────────────
 
+/** Single insight item when API returns arrays (e.g. job_title, location, seniority) */
+export type AudienceInsightItem = {
+  title: string;
+  percentage: string;
+};
+
+/** API may return insights as object (experience/location/industry) or as arrays (seniority, location, industry, job_title, company_size, company) */
+export type AudienceInsightsShape =
+  | {
+      experience: AudienceInsight;
+      location: AudienceInsight;
+      industry: AudienceInsight;
+    }
+  | {
+      job_title?: AudienceInsightItem[];
+      location?: AudienceInsightItem[];
+      industry?: AudienceInsightItem[];
+      seniority?: AudienceInsightItem[];
+      company_size?: AudienceInsightItem[];
+      company?: AudienceInsightItem[];
+    };
+
 export type AudienceData = {
-  followers: {
+  followers?: {
     totalFollowers: string;
     deltaChange: string | null;
     deltaColor: "green" | "red" | null;
   };
-  insights: {
-    experience: AudienceInsight;
-    location: AudienceInsight;
-    industry: AudienceInsight;
-  };
+  insights: AudienceInsightsShape;
 };
 
 export type AudienceInsight = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -61,29 +61,44 @@ export function SearchPanel({ open, onClose, onNavigate, onAction }: SearchPanel
       )
     : SEARCH_ITEMS;
 
-  const grouped = filtered.reduce<Record<string, SearchItem[]>>((acc, item) => {
-    if (!acc[item.group]) acc[item.group] = [];
-    acc[item.group].push(item);
-    return acc;
-  }, {});
-  const flatIndexToItem: SearchItem[] = [];
-  Object.values(grouped).forEach((items) => items.forEach((i) => flatIndexToItem.push(i)));
+  const { flatIndexToItem, grouped } = useMemo(() => {
+    const groupedMap = filtered.reduce<Record<string, SearchItem[]>>((acc, item) => {
+      if (!acc[item.group]) acc[item.group] = [];
+      acc[item.group].push(item);
+      return acc;
+    }, {});
+    const flat: SearchItem[] = [];
+    Object.values(groupedMap).forEach((items) => items.forEach((i) => flat.push(i)));
+    return { flatIndexToItem: flat, grouped: groupedMap };
+  }, [filtered]);
 
   useEffect(() => {
     if (open) {
-      setQuery("");
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const id = setTimeout(() => {
+        setQuery("");
+        setSelectedIndex(0);
+        inputRef.current?.focus();
+      }, 0);
+      const focusId = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => {
+        clearTimeout(id);
+        clearTimeout(focusId);
+      };
     }
   }, [open]);
 
   useEffect(() => {
-    setSelectedIndex(0);
+    const id = setTimeout(() => setSelectedIndex(0), 0);
+    return () => clearTimeout(id);
   }, [query]);
 
   useEffect(() => {
     if (selectedIndex >= flatIndexToItem.length && flatIndexToItem.length > 0) {
-      setSelectedIndex(flatIndexToItem.length - 1);
+      const id = setTimeout(
+        () => setSelectedIndex(flatIndexToItem.length - 1),
+        0,
+      );
+      return () => clearTimeout(id);
     }
   }, [selectedIndex, flatIndexToItem.length]);
 
