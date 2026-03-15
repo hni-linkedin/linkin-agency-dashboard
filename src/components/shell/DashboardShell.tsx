@@ -45,18 +45,21 @@ export interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("sidebar-collapsed");
-    return stored !== null ? stored === "true" : true;
-  });
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window === "undefined") return "dark";
-    const stored = localStorage.getItem("la-theme") as "dark" | "light" | null;
-    return stored === "dark" || stored === "light" ? stored : "dark";
-  });
+  // Fixed initial state so server and client match (avoids hydration error). Synced from localStorage in useEffect.
+  const [collapsed, setCollapsed] = useState(true);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Restore sidebar/theme from localStorage after mount to avoid server/client HTML mismatch (hydration).
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect -- sync from localStorage after hydration only */
+    const storedCollapsed = localStorage.getItem("sidebar-collapsed");
+    if (storedCollapsed !== null) setCollapsed(storedCollapsed === "true");
+    const storedTheme = localStorage.getItem("la-theme") as "dark" | "light" | null;
+    if (storedTheme === "dark" || storedTheme === "light") setTheme(storedTheme);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
