@@ -42,20 +42,14 @@ export function DonutChart({
   const cy = size / 2;
   const gap = 2;
   const circumference = 2 * Math.PI * r;
-  let offset = 0;
 
-  const segments = data.map((d, i) => {
+  const segments = data.reduce<Array<{ offset: number; length: number; pct: number; label: string; value: number; color: string }>>((acc, d, i) => {
     const pct = total > 0 ? d.value / total : 0;
     const length = pct * circumference - (i < data.length - 1 ? gap : 0);
-    const seg = {
-      ...d,
-      offset,
-      length,
-      pct: pct * 100,
-    };
-    offset += length + gap;
-    return seg;
-  });
+    const offset = acc.length > 0 ? acc[acc.length - 1].offset + acc[acc.length - 1].length + gap : 0;
+    acc.push({ ...d, offset, length, pct: pct * 100 });
+    return acc;
+  }, []);
 
   return (
     <motion.div

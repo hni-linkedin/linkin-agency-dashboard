@@ -32,7 +32,6 @@ export function BarChart({
   height = 200,
   showValues = true,
   showPercent = false,
-  maxValue: maxValueProp,
   loading = false,
 }: BarChartProps) {
   if (loading) {
@@ -41,8 +40,6 @@ export function BarChart({
     );
   }
 
-  const maxVal =
-    maxValueProp ?? (data.length ? Math.max(...data.map((d) => d.value)) : 1);
   const total = data.reduce((s, d) => s + d.value, 0);
 
   return (
@@ -105,7 +102,7 @@ export function BarChart({
             animationDuration={600}
             animationEasing="ease-out"
           >
-            {data.map((entry, i) => (
+            {data.map((entry) => (
               <Cell key={entry.label} fill={entry.color ?? "var(--accent)"} />
             ))}
           </Bar>
@@ -120,7 +117,7 @@ export function BarChart({
             marginTop: "8px",
           }}
         >
-          {data.map((d, i) => {
+          {data.map((d) => {
             const pct = total > 0 ? (d.value / total) * 100 : 0;
             return (
               <div

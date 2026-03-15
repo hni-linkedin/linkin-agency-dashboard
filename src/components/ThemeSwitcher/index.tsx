@@ -1,24 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { IconButton } from "../IconButton";
 import { Moon, Sun } from "lucide-react";
-import { setTheme } from "../ThemeScript";
+import { setTheme, THEME_CHANGE_EVENT } from "../ThemeScript";
+
+function getSnapshot(): "light" | "dark" {
+  if (typeof document === "undefined") return "dark";
+  return (document.documentElement.dataset.theme === "light" ? "light" : "dark") as "light" | "dark";
+}
+
+function getServerSnapshot(): "light" | "dark" {
+  return "dark";
+}
+
+function subscribe(callback: () => void) {
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
+  return () => window.removeEventListener(THEME_CHANGE_EVENT, callback);
+}
 
 export function ThemeSwitcher() {
-  const [theme, setThemeState] = useState<"light" | "dark">("dark");
-
-  useEffect(() => {
-    const stored = (typeof window !== "undefined" && (localStorage.getItem("theme") as "light" | "dark" | null)) || "dark";
-    const resolved = stored === "light" ? "light" : "dark";
-    setThemeState(resolved);
-    document.documentElement.dataset.theme = resolved;
-  }, []);
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggle = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
-    setThemeState(next);
   };
 
   return (

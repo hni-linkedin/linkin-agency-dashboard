@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 
 export interface SortButtonProps {
   active: boolean;

@@ -14,11 +14,18 @@ export function ThemeScript() {
   return null;
 }
 
+export const THEME_CHANGE_EVENT = "themechange";
+
 export function setTheme(theme: "light" | "dark") {
   document.documentElement.dataset.theme = theme;
   try {
     localStorage.setItem(STORAGE_KEY, theme);
-  } catch (_) {}
+  } catch {
+    // ignore
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+  }
 }
 
 export function getTheme(): "light" | "dark" {
