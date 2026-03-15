@@ -50,8 +50,13 @@
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-default: rgba(255, 255, 255, 0.12);
   --border-strong: rgba(255, 255, 255, 0.2);
+  --border-card: rgba(255, 255, 255, 0.12);
   --border-accent: rgba(45, 127, 232, 0.45);
   --border-focus: rgba(45, 127, 232, 0.7);
+
+  /* Text on cards (dark theme: same as page) */
+  --text-on-card: var(--text-primary);
+  --text-on-card-muted: var(--text-muted);
 
   /* Radius — PATCH 2: max 4px; only avatar/dots use full */
   --r-none: 0;
@@ -113,55 +118,60 @@
 }
 
 /* ─── LIGHT THEME ─── */
-/* Surfaces — cool blue-tinted, not white */
+/* Balanced: light blue-grey surfaces, dark text; blue as accent only */
 [data-theme="light"] {
-  --bg-base: #edf1f7;   /* page background — slate blue tint */
-  --bg-surface: #e4eaf4;   /* sidebar, topbar — slightly deeper */
-  --bg-card: #edf1f7;   /* cards — same as base, border defines them */
-  --bg-elevated: #d8e2f0;   /* dropdowns, nested cards — noticeably deeper */
-  --bg-overlay: #cfdaee;   /* modals, tooltips — deepest surface */
+  --bg-base: #f2f5f9;
+  --bg-surface: #e8ecf2;
+  --bg-card: #ffffff;   /* clean white cards */
+  --bg-elevated: #eef1f6;   /* subtle blue-grey for dropdowns/nested */
+  --bg-overlay: #e4e8ef;
 
-  --accent: #1a6fd4;
-  --accent-hover: #2d7fe8;
-  --accent-dim: rgba(26, 111, 212, 0.08);
-  --accent-glow: rgba(26, 111, 212, 0.18);
-  --accent-muted: rgba(26, 111, 212, 0.04);
+  --accent: #0a66c2;   /* LinkedIn blue — buttons, links, highlights only */
+  --accent-hover: #004182;
+  --accent-dim: rgba(10, 102, 194, 0.1);
+  --accent-glow: rgba(10, 102, 194, 0.18);
+  --accent-muted: rgba(10, 102, 194, 0.06);
 
   --green: #1aad75;
-  --green-dim: rgba(26, 173, 117, 0.08);
-  --green-border: rgba(26, 173, 117, 0.2);
-  --green-muted: rgba(26, 173, 117, 0.04);
+  --green-dim: rgba(26, 173, 117, 0.1);
+  --green-border: rgba(26, 173, 117, 0.22);
+  --green-muted: rgba(26, 173, 117, 0.06);
 
   --amber: #d4860a;
-  --amber-dim: rgba(212, 134, 10, 0.08);
-  --amber-border: rgba(212, 134, 10, 0.2);
+  --amber-dim: rgba(212, 134, 10, 0.1);
+  --amber-border: rgba(212, 134, 10, 0.22);
 
   --red: #c93333;
-  --red-dim: rgba(201, 51, 51, 0.08);
-  --red-border: rgba(201, 51, 51, 0.2);
+  --red-dim: rgba(201, 51, 51, 0.1);
+  --red-border: rgba(201, 51, 51, 0.22);
 
-  --text-primary: #0e1117;
-  --text-secondary: #4a5568;
-  --text-muted: #8896a7;
-  --text-disabled: #c8d0da;
+  --text-primary: #0d1117;
+  --text-secondary: #4d5d73;
+  --text-muted: #6b7280;
+  --text-disabled: #9ca3af;
 
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-default: rgba(0, 0, 0, 0.14);
-  --border-strong: rgba(0, 0, 0, 0.22);
-  --border-accent: rgba(26, 111, 212, 0.4);
-  --border-focus: rgba(26, 111, 212, 0.65);
+  /* Cards use same text as page (dark on white) */
+  --text-on-card: var(--text-primary);
+  --text-on-card-muted: var(--text-muted);
 
-  --chart-impressions: #1a6fd4;
+  --border-subtle: rgba(13, 17, 23, 0.08);
+  --border-default: rgba(13, 17, 23, 0.12);
+  --border-strong: rgba(13, 17, 23, 0.2);
+  --border-card: rgba(13, 17, 23, 0.1);
+  --border-accent: rgba(10, 102, 194, 0.4);
+  --border-focus: rgba(10, 102, 194, 0.65);
+
+  --chart-impressions: #0a66c2;
   --chart-engagements: #1aad75;
   --chart-reposts: #d4860a;
   --chart-saves: #7c5cbf;
-  --chart-sends: #8896a7;
-  --chart-grid: rgba(0, 0, 0, 0.05);
+  --chart-sends: #6b7280;
+  --chart-grid: rgba(13, 17, 23, 0.06);
 
-  --shadow-accent: 0 0 12px rgba(26, 111, 212, 0.2);
+  --shadow-accent: 0 0 12px rgba(10, 102, 194, 0.2);
   --shadow-green: 0 0 10px rgba(26, 173, 117, 0.15);
-  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.08);
-  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 0 0 1px rgba(13, 17, 23, 0.08);
+  --shadow-overlay: 0 8px 32px rgba(13, 17, 23, 0.12);
 }
 
 /* Shimmer keyframes */

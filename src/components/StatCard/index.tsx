@@ -84,6 +84,7 @@ export function StatCard({
 
   return (
     <motion.article
+      data-card-content
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -91,7 +92,7 @@ export function StatCard({
       role={onClick ? "button" : undefined}
       style={{
         background: "var(--bg-card)",
-        border: "1px dashed var(--border-subtle)",
+        border: "1px dashed var(--border-card)",
         boxShadow: "0 0 0 0px transparent",
         borderRadius: "var(--r-md)",
         padding: "20px 24px",
@@ -101,10 +102,10 @@ export function StatCard({
       onMouseEnter={(e) => {
         if (!onClick) return;
         e.currentTarget.style.borderColor = "var(--border-default)";
-        e.currentTarget.style.boxShadow = "0 0 0 1px var(--border-default)";
+        e.currentTarget.style.boxShadow = "0 0 0 1px var(--border-card)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "var(--border-subtle)";
+        e.currentTarget.style.borderColor = "var(--border-card)";
         e.currentTarget.style.boxShadow = "0 0 0 0px transparent";
       }}
     >
