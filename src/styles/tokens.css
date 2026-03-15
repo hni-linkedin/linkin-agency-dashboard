@@ -113,41 +113,42 @@
 }
 
 /* ─── LIGHT THEME ─── */
-/* Surfaces — cool blue-tinted, not white */
+/* Softer bluish palette — easier on eyes, reduced glare, cohesive blue tint */
 [data-theme="light"] {
-  --bg-base: #edf1f7;   /* page background — slate blue tint */
-  --bg-surface: #e4eaf4;   /* sidebar, topbar — slightly deeper */
-  --bg-card: #edf1f7;   /* cards — same as base, border defines them */
-  --bg-elevated: #d8e2f0;   /* dropdowns, nested cards — noticeably deeper */
-  --bg-overlay: #cfdaee;   /* modals, tooltips — deepest surface */
+  --bg-base: #dce4f2;   /* page background — soft blue-grey */
+  --bg-surface: #d0daec;   /* sidebar, topbar — slightly deeper */
+  --bg-card: #d8e0ee;   /* cards */
+  --bg-elevated: #c6d2e6;   /* dropdowns, nested cards */
+  --bg-overlay: #b8c6de;   /* modals, tooltips */
 
   --accent: #1a6fd4;
   --accent-hover: #2d7fe8;
-  --accent-dim: rgba(26, 111, 212, 0.08);
+  --accent-dim: rgba(26, 111, 212, 0.1);
   --accent-glow: rgba(26, 111, 212, 0.18);
-  --accent-muted: rgba(26, 111, 212, 0.04);
+  --accent-muted: rgba(26, 111, 212, 0.05);
 
   --green: #1aad75;
-  --green-dim: rgba(26, 173, 117, 0.08);
-  --green-border: rgba(26, 173, 117, 0.2);
-  --green-muted: rgba(26, 173, 117, 0.04);
+  --green-dim: rgba(26, 173, 117, 0.1);
+  --green-border: rgba(26, 173, 117, 0.22);
+  --green-muted: rgba(26, 173, 117, 0.05);
 
   --amber: #d4860a;
-  --amber-dim: rgba(212, 134, 10, 0.08);
-  --amber-border: rgba(212, 134, 10, 0.2);
+  --amber-dim: rgba(212, 134, 10, 0.1);
+  --amber-border: rgba(212, 134, 10, 0.22);
 
   --red: #c93333;
-  --red-dim: rgba(201, 51, 51, 0.08);
-  --red-border: rgba(201, 51, 51, 0.2);
+  --red-dim: rgba(201, 51, 51, 0.1);
+  --red-border: rgba(201, 51, 51, 0.22);
 
-  --text-primary: #0e1117;
-  --text-secondary: #4a5568;
-  --text-muted: #8896a7;
-  --text-disabled: #c8d0da;
+  /* Dark blue-grey text — softer than pure black, better for long use */
+  --text-primary: #1c2838;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-disabled: #94a3b8;
 
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-default: rgba(0, 0, 0, 0.14);
-  --border-strong: rgba(0, 0, 0, 0.22);
+  --border-subtle: rgba(28, 40, 56, 0.08);
+  --border-default: rgba(28, 40, 56, 0.12);
+  --border-strong: rgba(28, 40, 56, 0.2);
   --border-accent: rgba(26, 111, 212, 0.4);
   --border-focus: rgba(26, 111, 212, 0.65);
 
@@ -155,13 +156,13 @@
   --chart-engagements: #1aad75;
   --chart-reposts: #d4860a;
   --chart-saves: #7c5cbf;
-  --chart-sends: #8896a7;
-  --chart-grid: rgba(0, 0, 0, 0.05);
+  --chart-sends: #64748b;
+  --chart-grid: rgba(28, 40, 56, 0.06);
 
-  --shadow-accent: 0 0 12px rgba(26, 111, 212, 0.2);
-  --shadow-green: 0 0 10px rgba(26, 173, 117, 0.15);
-  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.08);
-  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-accent: 0 0 12px rgba(26, 111, 212, 0.18);
+  --shadow-green: 0 0 10px rgba(26, 173, 117, 0.12);
+  --shadow-card: 0 0 0 1px rgba(28, 40, 56, 0.08);
+  --shadow-overlay: 0 8px 32px rgba(28, 40, 56, 0.12);
 }
 
 /* Shimmer keyframes */
