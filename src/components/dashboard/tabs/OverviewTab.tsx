@@ -19,7 +19,7 @@ import {
 import type { FreshnessTableRow } from "@/components";
 import type { MappedHomeData } from "@/lib/mappers/homeMapper";
 import type { FreshnessStatus } from "@/components/FreshnessIndicator";
-import { formatNumber } from "@/lib/formatters";
+import { formatNumber, formatNumberIndian } from "@/lib/formatters";
 import {
   staggerContainer,
   fadeUp,
@@ -38,7 +38,11 @@ const FRESHNESS_LABELS: Record<string, string> = {
   analytics_audience_7d: "Aud · 7d",
   analytics_audience_28d: "Aud · 28d",
   analytics_audience_90d: "Aud · 90d",
-  analytics_search_appearances: "Search",
+  analytics_search_appearances: "Search · all",
+  analytics_search_appearances_where: "Search · where",
+  analytics_search_appearances_companies: "Search · companies",
+  analytics_search_appearances_titles: "Search · titles",
+  analytics_search_appearances_found_for: "Search · found for",
   analytics_profile_views: "Views",
   profile_main: "Profile",
   network_connections: "Connections",
@@ -502,9 +506,9 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                 </div>
                 <motion.div
                   variants={staggerContainer}
-                  className="grid grid-cols-1 gap-4 sm:grid-cols-4"
+                  className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
                 >
-                  <motion.div variants={cardEntry} className="sm:col-span-1">
+                  <motion.div variants={cardEntry} className="sm:col-span-2 lg:col-span-1">
                     {data.followers ? (
                       <StatCard
                         label="Followers · total"
@@ -864,7 +868,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {value != null ? formatNumber(value) : "0"}
+                        {value != null ? formatNumberIndian(value) : "0"}
                       </span>
                       <div
                         style={{
@@ -953,7 +957,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                         fontVariantNumeric: "tabular-nums",
                       }}
                     >
-                      {row.members != null ? formatNumber(Number(row.members)) : "—"}
+                      {row.members != null ? formatNumberIndian(row.members) : "—"}
                     </span>
                   </div>
                 </div>
@@ -1029,16 +1033,18 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                       {data.followers.display}
                     </div>
                     {data.followers.delta != null && (
-                      <DeltaBadge
-                        value={
-                          data.followers.direction === "up"
-                            ? (data.followers.deltaNumeric ?? 0)
-                            : data.followers.direction === "down"
-                              ? -(data.followers.deltaNumeric ?? 0)
-                              : 0
-                        }
-                        size="sm"
-                      />
+                      <div style={{ marginTop: 6 }}>
+                        <DeltaBadge
+                          value={
+                            data.followers.direction === "up"
+                              ? (data.followers.deltaNumeric ?? 0)
+                              : data.followers.direction === "down"
+                                ? -(data.followers.deltaNumeric ?? 0)
+                                : 0
+                          }
+                          size="sm"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
@@ -1139,8 +1145,8 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
           </motion.div>
         </div>
 
-        <motion.div variants={cardEntry}>
-          <DataCard title="Who's finding you">
+        <motion.div variants={cardEntry} className="min-h-0 flex flex-1 flex-col">
+          <DataCard title="Who's finding you" className="min-h-0" fillHeight>
             {!data.search ? (
               <div style={{ padding: 24 }}>
                 <CaptureBadge pageType="search" status="missing" />
@@ -1170,50 +1176,72 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                       {formatNumber(data.search.totalAppearances)}
                     </span>
                     {data.search.delta && (
-                      <span
-                        style={{
-                          marginLeft: 8,
-                          fontFamily: "var(--font-data)",
-                          fontSize: "var(--text-sm-size)",
-                          color: "var(--text-muted)",
-                        }}
-                      >
-                        {data.search.delta}
+                      <span style={{ marginLeft: 10, display: "inline-flex", verticalAlign: "middle" }}>
+                        <DeltaBadge
+                          size="sm"
+                          value={(() => {
+                            const n = Number(String(data.search.delta).replace(/,/g, "").trim());
+                            return Number.isFinite(n) ? n : 0;
+                          })()}
+                        />
                       </span>
                     )}
                   </div>
                 )}
                 {[
-                  { title: "Searcher titles", items: data.search.topTitles.slice(0, 5) },
-                  { title: "Searcher companies", items: data.search.topCompanies.slice(0, 5) },
-                  { title: "You appear for", items: data.search.foundFor.slice(0, 5) },
-                ].map((section) => {
+                  { title: "Searcher titles", items: data.search.topTitles.slice(0, 5), showBar: true },
+                  { title: "Searcher companies", items: data.search.topCompanies.slice(0, 5), showBar: false },
+                  { title: "You appear for", items: data.search.foundFor.slice(0, 5), showBar: true },
+                ].map((section, sectionIndex) => {
                   const total = section.items.reduce((s, x) => s + x.value, 0) || 1;
+                  const isFirst = sectionIndex === 0;
                   return (
-                    <div key={section.title} style={{ marginBottom: 12 }}>
+                    <div
+                      key={section.title}
+                      style={{
+                        marginBottom: 28,
+                        marginTop: isFirst ? 4 : 16,
+                        paddingTop: isFirst ? 4 : 16,
+                        borderTop: isFirst ? "none" : "1px dashed var(--border-subtle)",
+                      }}
+                    >
                       <div
                         style={{
                           fontFamily: "var(--font-data)",
                           fontSize: "var(--text-2xs-size)",
-                          color: "var(--text-disabled)",
+                          color: "var(--text-secondary)",
                           textTransform: "uppercase",
                           letterSpacing: "0.08em",
                           marginBottom: 6,
+                          fontWeight: 600,
                         }}
                       >
                         {section.title}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {section.items.map((item, i) => (
-                          <MetricRow
-                            key={i}
-                            label={item.label}
-                            value={item.value}
-                            displayValue={item.displayValue ?? `${item.value}%`}
-                            maxValue={total}
-                            index={i}
-                          />
-                        ))}
+                        {section.showBar
+                          ? section.items.map((item, i) => (
+                              <MetricRow
+                                key={i}
+                                label={item.label}
+                                value={item.value}
+                                displayValue={item.displayValue ?? `${item.value}%`}
+                                maxValue={total}
+                                index={i}
+                              />
+                            ))
+                          : section.items.map((item, i) => (
+                              <div
+                                key={i}
+                                style={{
+                                  fontFamily: "var(--font-data)",
+                                  fontSize: "var(--text-sm-size)",
+                                  color: "var(--text-primary)",
+                                }}
+                              >
+                                {item.label}
+                              </div>
+                            ))}
                       </div>
                     </div>
                   );
