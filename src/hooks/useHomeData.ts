@@ -42,12 +42,23 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
     getHomeData(clientId)
       .then((raw) => {
         if (ignore) return;
-        const mapped = mapHomeData(raw);
-        setData(mapped);
-        setStatus("success");
+        try {
+          const mapped = mapHomeData(raw);
+          setData(mapped);
+          setStatus("success");
+        } catch (e) {
+          // Surface mapper issues in devtools so we can debug shape mismatches.
+          // eslint-disable-next-line no-console
+          console.error("[mapHomeData error]", e, raw);
+          setError("Failed to map dashboard data");
+          setData(null);
+          setStatus("error");
+        }
       })
       .catch((e) => {
         if (ignore) return;
+        // eslint-disable-next-line no-console
+        console.error("[useHomeData fetch error]", e);
         const message =
           e instanceof ApiError ? e.message : "Something went wrong";
         setError(message);
@@ -68,10 +79,20 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
 
     try {
       const raw = await getHomeData(clientId);
-      const mapped = mapHomeData(raw);
-      setData(mapped);
-      setStatus("success");
+      try {
+        const mapped = mapHomeData(raw);
+        setData(mapped);
+        setStatus("success");
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("[mapHomeData error - refetch]", e, raw);
+        setError("Failed to map dashboard data");
+        setData(null);
+        setStatus("error");
+      }
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("[useHomeData fetch error - refetch]", e);
       const message =
         e instanceof ApiError ? e.message : "Something went wrong";
       setError(message);
