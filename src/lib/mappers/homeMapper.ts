@@ -10,6 +10,7 @@ import type {
   ProfileData,
   ProfileViewsData,
   SearchData,
+  SearchAppearancesSummary,
   TopPost,
   Viewer,
 } from "@/types/home";
@@ -52,9 +53,9 @@ export type MappedHomeData = {
   linkClicks7d: number | null;
   linkClicks28d: number | null;
   linkClicks90d: number | null;
-  membersReached7d: string | null;
-  membersReached28d: string | null;
-  membersReached90d: string | null;
+  membersReached7d: number | null;
+  membersReached28d: number | null;
+  membersReached90d: number | null;
   engagementsSplit7d: { label: string; value: number; color: string }[] | null;
   engagementsSplit28d: { label: string; value: number; color: string }[] | null;
   engagementsSplit90d: { label: string; value: number; color: string }[] | null;
@@ -116,8 +117,9 @@ export type MappedHomeData = {
 
 // ── Internal helpers ────────────────────────────────
 
-function parseNum(val: string | null | undefined): number | null {
+function parseNum(val: string | number | null | undefined): number | null {
   if (val === null || val === undefined) return null;
+  if (typeof val === "number") return Number.isFinite(val) ? val : null;
   const n = Number(val.replace(/,/g, ""));
   return Number.isFinite(n) ? n : null;
 }
@@ -135,8 +137,9 @@ function toDirection(
   return "neutral";
 }
 
-function parsePct(val: string | null | undefined): number | null {
+function parsePct(val: string | number | null | undefined): number | null {
   if (val === null || val === undefined) return null;
+  if (typeof val === "number") return Number.isFinite(val) ? val : null;
   const s = val.replace(/%/g, "").trim();
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
@@ -155,8 +158,9 @@ function parsePctWithDisplay(
   return { value: n ?? 0 };
 }
 
-function parseDeltaNumeric(change: string | null | undefined): number | null {
+function parseDeltaNumeric(change: string | number | null | undefined): number | null {
   if (change == null || change === "") return null;
+  if (typeof change === "number") return Number.isFinite(change) ? change : null;
   const n = parseFloat(change.replace(/,/g, "").replace(/%/g, "").trim());
   return Number.isFinite(n) ? n : null;
 }
@@ -284,11 +288,25 @@ export function mapHomeData(raw: HomeData): MappedHomeData {
     : null;
 
   const searchAppearances = summary.search
-    ? toStat(
-        summary.search.totalAppearances,
-        summary.search.delta,
-        null,
-      )
+    ? (() => {
+        const s = summary.search as
+          | SearchData
+          | SearchAppearancesSummary
+          | (SearchData & { where?: SearchAppearancesSummary["where"] });
+        const total =
+          (s as SearchData).totalAppearances ??
+          (s as SearchAppearancesSummary).where?.totalAppearances ??
+          null;
+        const delta =
+          (s as SearchData).delta ??
+          (s as SearchAppearancesSummary).where?.delta ??
+          null;
+        return toStat(
+          total != null ? String(total) : null,
+          delta != null ? String(delta) : null,
+          null,
+        );
+      })()
     : null;
 
   let profile: MappedHomeData["profile"] = null;
@@ -353,61 +371,121 @@ export function mapHomeData(raw: HomeData): MappedHomeData {
   let search: MappedHomeData["search"] = null;
   const rawSearch = summary.search as Record<string, unknown> | null | undefined;
   if (rawSearch) {
-    const s = rawSearch;
-    const hasStandardShape =
-      Array.isArray(s.topSearcherTitles) || Array.isArray(s.topSearcherCompanies);
-    const hasArrayShape =
-      Array.isArray(s.job_title) || Array.isArray(s.company);
+    try {
+      const s = rawSearch;
+      const hasNewShape = "where" in s;
+      const hasStandardShape =
+        Array.isArray((s as SearchData).topSearcherTitles) ||
+        Array.isArray((s as SearchData).topSearcherCompanies);
+      const hasArrayShape =
+        Array.isArray((s as { job_title?: unknown }).job_title) ||
+        Array.isArray((s as { company?: unknown }).company);
 
-    if (hasStandardShape) {
-      const std = rawSearch as SearchData;
-      const where = std.whereYouAppeared;
-      search = {
-        totalAppearances: parseNum(std.totalAppearances),
-        delta: std.delta ?? null,
-        direction: toDirection(
-          std.delta ? (std.delta.startsWith("-") ? "red" : "green") : null,
-        ),
-        whereYouAppeared: where
-          ? {
-              posts: parseNum(where.posts) ?? 0,
-              networkRecommendations: parseNum(where.networkRecommendations) ?? 0,
-              comments: parseNum(where.comments) ?? 0,
-              search: parseNum(where.search) ?? 0,
-            }
-          : null,
-        topCompanies: (std.topSearcherCompanies ?? []).map((x) => ({
-          label: x.label,
-          value: parseNum(x.value) ?? 0,
-        })),
-        topTitles: (std.topSearcherTitles ?? []).map((x) => ({
-          label: x.label,
-          value: parseNum(x.value) ?? 0,
-        })),
-        foundFor: (std.titlesFoundFor ?? []).map((x) => ({
-          label: x.label,
-          value: parseNum(x.value) ?? 0,
-        })),
-      };
-    } else if (hasArrayShape) {
-      // Alternative shape: job_title, company (and optionally industry) as [{ title, percentage }]
-      const toItems = (arr: { title: string; percentage: string }[] | undefined) =>
-        (arr ?? []).slice(0, 5).map((x) => {
-          const { value, displayValue } = parsePctWithDisplay(x.percentage);
-          return { label: x.title, value, ...(displayValue != null && { displayValue }) };
-        });
-      const jobTitle = s.job_title as { title: string; percentage: string }[] | undefined;
-      const company = s.company as { title: string; percentage: string }[] | undefined;
-      const industry = s.industry as { title: string; percentage: string }[] | undefined;
-      search = {
-        totalAppearances: null,
-        delta: null,
-        direction: "neutral",
-        whereYouAppeared: null,
-        topTitles: toItems(jobTitle),
-        topCompanies: toItems(company),
-        foundFor: toItems(industry),
-      };
+      if (hasNewShape) {
+        const ns = rawSearch as SearchAppearancesSummary;
+        const where = ns.where;
+        const deltaRaw = where?.delta ?? null;
+        let deltaDirectionColor: "green" | "red" | null = null;
+        if (typeof deltaRaw === "number") {
+          if (deltaRaw > 0) deltaDirectionColor = "green";
+          else if (deltaRaw < 0) deltaDirectionColor = "red";
+        } else if (typeof deltaRaw === "string" && deltaRaw.trim() !== "") {
+          deltaDirectionColor = deltaRaw.trim().startsWith("-") ? "red" : "green";
+        }
+
+        const whereBlock = where?.whereYouAppeared;
+
+        const toPercentItems = (
+          arr: { title: string; percentage: number }[] | undefined,
+        ) =>
+          (arr ?? []).map((x) => ({
+            label: x.title,
+            value: x.percentage,
+            displayValue: `${x.percentage}%`,
+          }));
+
+        search = {
+          totalAppearances: parseNum(where?.totalAppearances ?? null),
+          delta: deltaRaw != null ? String(deltaRaw) : null,
+          direction: toDirection(deltaDirectionColor),
+          whereYouAppeared: whereBlock
+            ? {
+                posts: parseNum(whereBlock.posts) ?? 0,
+                networkRecommendations:
+                  parseNum(whereBlock.networkRecommendations) ?? 0,
+                comments: parseNum(whereBlock.comments) ?? 0,
+                search: parseNum(whereBlock.search) ?? 0,
+              }
+            : null,
+          topCompanies: (ns.companies ?? []).map((c) => ({
+            label: c.label,
+            value: 0,
+          })),
+          topTitles: toPercentItems(ns.titles),
+          foundFor: toPercentItems(ns.foundFor),
+        };
+      } else if (hasStandardShape) {
+        const std = rawSearch as SearchData & { delta?: string | number | null };
+        const where = std.whereYouAppeared;
+
+        const deltaRaw = std.delta;
+        let deltaDirectionColor: "green" | "red" | null = null;
+        if (typeof deltaRaw === "number") {
+          if (deltaRaw > 0) deltaDirectionColor = "green";
+          else if (deltaRaw < 0) deltaDirectionColor = "red";
+        } else if (typeof deltaRaw === "string" && deltaRaw.trim() !== "") {
+          deltaDirectionColor = deltaRaw.trim().startsWith("-") ? "red" : "green";
+        }
+
+        search = {
+          totalAppearances: parseNum(std.totalAppearances),
+          delta: deltaRaw != null ? String(deltaRaw) : null,
+          direction: toDirection(deltaDirectionColor),
+          whereYouAppeared: where
+            ? {
+                posts: parseNum(where.posts) ?? 0,
+                networkRecommendations: parseNum(where.networkRecommendations) ?? 0,
+                comments: parseNum(where.comments) ?? 0,
+                search: parseNum(where.search) ?? 0,
+              }
+            : null,
+          topCompanies: (std.topSearcherCompanies ?? []).map((x) => ({
+            label: x.label,
+            value: parseNum(x.value) ?? 0,
+          })),
+          topTitles: (std.topSearcherTitles ?? []).map((x) => ({
+            label: x.label,
+            value: parseNum(x.value) ?? 0,
+          })),
+          foundFor: (std.titlesFoundFor ?? []).map((x) => ({
+            label: x.label,
+            value: parseNum(x.value) ?? 0,
+          })),
+        };
+      } else if (hasArrayShape) {
+        // Alternative shape: job_title, company (and optionally industry) as [{ title, percentage }]
+        const toItems = (arr: { title: string; percentage: string }[] | undefined) =>
+          (arr ?? []).slice(0, 5).map((x) => {
+            const { value, displayValue } = parsePctWithDisplay(x.percentage);
+            return { label: x.title, value, ...(displayValue != null && { displayValue }) };
+          });
+        const jobTitle = (s as { job_title?: { title: string; percentage: string }[] }).job_title;
+        const company = (s as { company?: { title: string; percentage: string }[] }).company;
+        const industry = (s as { industry?: { title: string; percentage: string }[] }).industry;
+        search = {
+          totalAppearances: null,
+          delta: null,
+          direction: "neutral",
+          whereYouAppeared: null,
+          topTitles: toItems(jobTitle),
+          topCompanies: toItems(company),
+          foundFor: toItems(industry),
+        };
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("[mapHomeData search section error]", e, rawSearch);
+      search = null;
     }
   }
 
@@ -468,7 +546,8 @@ export function mapHomeData(raw: HomeData): MappedHomeData {
   const membersReached = (s: typeof summary.impressions28d) => {
     if (!s) return null;
     const m = (s as { members?: { totalMembersReached: string } }).members;
-    return m?.totalMembersReached ?? null;
+    if (!m?.totalMembersReached) return null;
+    return parseNum(m.totalMembersReached);
   };
   const membersReached7d = membersReached(summary.impressions7d);
   const membersReached28d = membersReached(summary.impressions28d);

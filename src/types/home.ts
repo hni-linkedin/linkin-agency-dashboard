@@ -32,7 +32,7 @@ export type HomeSummary = {
   audience7d?: AudienceData | null;
   audience28d?: AudienceData | null;
   audience90d?: AudienceData | null;
-  search: SearchData | null;
+  search: SearchData | SearchAppearancesSummary | null;
   profileViews: ProfileViewsData | null;
   topPosts?: TopPost[] | null;
   lastCapturedAt: string;
@@ -133,7 +133,7 @@ export type AudienceInsight = {
   percentage: string;
 };
 
-// ── Search appearances ───────────────────────────────
+// ── Search appearances (legacy shape) ────────────────
 
 export type SearchData = {
   totalAppearances: string;
@@ -152,6 +152,40 @@ export type SearchData = {
 export type SearchItem = {
   label: string;
   value: string;
+};
+
+// ── Search appearances (sectioned API shape) ─────────
+
+/** "Where you appeared" block: total appearances, delta, and breakdown by surface. */
+export type SearchAppearancesWhere = {
+  totalAppearances: number | string;
+  delta: number | string | null;
+  whereYouAppeared: {
+    posts: number | string;
+    networkRecommendations: number | string;
+    comments: number | string;
+    search: number | string;
+  };
+};
+
+/** Company that appeared in search searchers (optional logo). */
+export type SearchSearcherCompany = {
+  label: string;
+  image?: string;
+};
+
+/** Segment with label and percentage (e.g. searcher title, "found for" keyword). */
+export type SearchSegmentItem = {
+  title: string;
+  percentage: number;
+};
+
+/** Search appearances payload: where block + optional companies, titles, foundFor. */
+export type SearchAppearancesSummary = {
+  where: SearchAppearancesWhere;
+  companies?: SearchSearcherCompany[];
+  titles?: SearchSegmentItem[];
+  foundFor?: SearchSegmentItem[];
 };
 
 // ── Profile views ────────────────────────────────────
