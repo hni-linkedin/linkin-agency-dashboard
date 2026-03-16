@@ -162,7 +162,6 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
           ? "Not captured"
           : "Capture status";
 
-  const maxImp = data.impressions90d?.value ?? 1;
   const windowComparisonRows = [
     {
       label: "7 days",

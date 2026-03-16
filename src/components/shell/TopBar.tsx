@@ -29,7 +29,7 @@ export function TopBar({
   onSearchOpen,
   onThemeToggle,
   theme,
-  sidebarCollapsed: _sidebarCollapsed,
+  sidebarCollapsed,
   onSignOut,
   isMobile = false,
   onHamburgerClick,

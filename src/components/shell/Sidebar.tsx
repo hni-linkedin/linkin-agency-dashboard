@@ -45,7 +45,6 @@ export interface SidebarProps {
   activeRoute: string;
   collapsed: boolean;
   onToggle: () => void;
-  user: SidebarUser;
   onSignOut: () => void;
 }
 
@@ -79,7 +78,7 @@ const NAV_TREE: {
   },
 ];
 
-export function Sidebar({ collapsed, onToggle, user, onSignOut }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, onSignOut }: SidebarProps) {
   const handleSignOut = () => {
     if (typeof window !== "undefined" && window.confirm("Sign out?")) {
       onSignOut();
