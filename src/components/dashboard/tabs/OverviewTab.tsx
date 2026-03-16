@@ -196,6 +196,11 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
     },
   ];
 
+  const safeMaxImp =
+    windowComparisonRows.reduce((max, row) => {
+      return row.value > max ? row.value : max;
+    }, 0) || 1;
+
   const engagementSource =
     engagementWindow === "7d"
       ? data.engagements7d
@@ -766,7 +771,7 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
                 </div>
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${maxImp > 0 ? (row.value / maxImp) * 100 : 0}%` }}
+                  animate={{ width: `${safeMaxImp > 0 ? (row.value / safeMaxImp) * 100 : 0}%` }}
                   transition={{ ...EASE_SLOW, delay: index * 0.1 }}
                   style={{
                     height: 3,

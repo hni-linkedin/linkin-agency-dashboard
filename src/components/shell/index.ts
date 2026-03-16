@@ -8,7 +8,7 @@ export type { SidebarItemProps } from "./SidebarItem";
 export { SidebarGroup } from "./SidebarGroup";
 export type { SidebarGroupProps } from "./SidebarGroup";
 export { TopBar } from "./TopBar";
-export type { TopBarProps, TopBarUser, TopBarCredits } from "./TopBar";
+export type { TopBarProps, TopBarUser } from "./TopBar";
 export { SearchPanel } from "./SearchPanel";
 export type { SearchPanelProps } from "./SearchPanel";
 export { UserMenu } from "./UserMenu";

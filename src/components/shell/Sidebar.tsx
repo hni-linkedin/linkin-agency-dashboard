@@ -145,7 +145,7 @@ export function Sidebar({ collapsed, onToggle, user, onSignOut }: SidebarProps) 
             <IconButton
               icon={
                 <motion.span
-                  animate={{ scaleX: collapsed ? -1 : 1 }}
+                  animate={{ scaleX: collapsed ? 1 : -1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   style={{ display: "inline-flex" }}
                 >

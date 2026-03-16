@@ -209,11 +209,12 @@ export function SearchPanel({ open, onClose, onNavigate, onAction }: SearchPanel
             style={{
               padding: "2px 6px",
               background: "var(--bg-card)",
-              border: "1px dashed var(--border-subtle)",
+              border: "1px solid var(--border-default)",
               borderRadius: "var(--r-sm)",
               fontFamily: "var(--font-data)",
-              fontSize: 10,
-              color: "var(--text-disabled)",
+              fontSize: 11,
+              color: "var(--text-secondary)",
+              fontWeight: 500,
             }}
           >
             Esc
