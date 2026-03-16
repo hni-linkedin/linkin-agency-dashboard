@@ -13,7 +13,7 @@ export type UseHomeDataReturn = {
   isEmpty: boolean;
   data: MappedHomeData | null;
   error: string | null;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 };
 
 export function useHomeData(clientId: string | null): UseHomeDataReturn {
@@ -61,24 +61,23 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
     };
   }, [clientId]);
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback(async () => {
     if (clientId === null || clientId === "") return;
     setError(null);
     setStatus("loading");
 
-    getHomeData(clientId)
-      .then((raw) => {
-        const mapped = mapHomeData(raw);
-        setData(mapped);
-        setStatus("success");
-      })
-      .catch((e) => {
-        const message =
-          e instanceof ApiError ? e.message : "Something went wrong";
-        setError(message);
-        setData(null);
-        setStatus("error");
-      });
+    try {
+      const raw = await getHomeData(clientId);
+      const mapped = mapHomeData(raw);
+      setData(mapped);
+      setStatus("success");
+    } catch (e) {
+      const message =
+        e instanceof ApiError ? e.message : "Something went wrong";
+      setError(message);
+      setData(null);
+      setStatus("error");
+    }
   }, [clientId]);
 
   const isLoading = status === "loading";

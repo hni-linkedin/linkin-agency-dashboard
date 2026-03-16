@@ -82,9 +82,10 @@ function formatLastCaptured(d: Date): string {
 export interface OverviewTabProps {
   data: MappedHomeData;
   clientId?: string;
+  onRefresh?: () => void;
 }
 
-export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
+export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps) {
   const [engagementWindow, setEngagementWindow] = useState<"7d" | "28d" | "90d">("28d");
   const [topPostsSort, setTopPostsSort] = useState<"impressions" | "engagements" | "comments">("impressions");
 
@@ -165,39 +166,29 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
   const windowComparisonRows = [
     {
       label: "7 days",
-      value: data.impressions7d?.value ?? 0,
-      display: data.impressions7d?.display ?? "—",
-      delta: data.impressions7d?.delta,
-      deltaNumeric: data.impressions7d?.deltaNumeric,
-      direction: data.impressions7d?.direction ?? "neutral",
+      value: data.membersReached7d ?? 0,
       members: data.membersReached7d,
-      null: !data.impressions7d,
+      null: !data.membersReached7d,
     },
     {
       label: "28 days",
-      value: data.impressions28d?.value ?? 0,
-      display: data.impressions28d?.display ?? "—",
-      delta: data.impressions28d?.delta,
-      deltaNumeric: data.impressions28d?.deltaNumeric,
-      direction: data.impressions28d?.direction ?? "neutral",
+      value: data.membersReached28d ?? 0,
       members: data.membersReached28d,
-      null: !data.impressions28d,
+      null: !data.membersReached28d,
     },
     {
       label: "90 days",
-      value: data.impressions90d?.value ?? 0,
-      display: data.impressions90d?.display ?? "—",
-      delta: data.impressions90d?.delta,
-      deltaNumeric: data.impressions90d?.deltaNumeric,
-      direction: data.impressions90d?.direction ?? "neutral",
+      value: data.membersReached90d ?? 0,
       members: data.membersReached90d,
-      null: !data.impressions90d,
+      null: !data.membersReached90d,
     },
   ];
 
   const safeMaxImp =
-    windowComparisonRows.reduce((max, row) => {
-      return row.value > max ? row.value : max;
+    windowComparisonRows.reduce<number>((max, row) => {
+      const numericValue =
+        typeof row.value === "number" ? row.value : Number(row.value) || 0;
+      return numericValue > max ? numericValue : max;
     }, 0) || 1;
 
   const engagementSource =
@@ -290,6 +281,25 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
             Last captured {lastCapturedStr}
           </p>
         </div>
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            style={{
+              alignSelf: "flex-start",
+              padding: "6px 12px",
+              borderRadius: "var(--r-md)",
+              border: "1px dashed var(--border-subtle)",
+              background: "var(--bg-elevated)",
+              color: "var(--text-muted)",
+              fontFamily: "var(--font-data)",
+              fontSize: "var(--text-xs-size)",
+              cursor: "pointer",
+            }}
+          >
+            Refresh data
+          </button>
+        )}
       </motion.div>
 
       {/* Section 2 — Freshness summary pills + expand modal */}
@@ -752,25 +762,23 @@ export function OverviewTab({ data, clientId = "" }: OverviewTabProps) {
                         fontVariantNumeric: "tabular-nums",
                       }}
                     >
-                      {row.display}
+                      {row.members != null ? formatNumber(Number(row.members)) : "—"}
                     </span>
-                    {row.delta != null && row.deltaNumeric != null && (
-                      <DeltaBadge
-                        value={
-                          row.direction === "up"
-                            ? row.deltaNumeric
-                            : row.direction === "down"
-                              ? -row.deltaNumeric
-                              : 0
-                        }
-                        size="sm"
-                      />
-                    )}
                   </div>
                 </div>
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${safeMaxImp > 0 ? (row.value / safeMaxImp) * 100 : 0}%` }}
+                  animate={{
+                    width: `${
+                      safeMaxImp > 0
+                        ? ((typeof row.value === "number"
+                            ? row.value
+                            : Number(row.value) || 0) /
+                            safeMaxImp) *
+                          100
+                        : 0
+                    }%`,
+                  }}
                   transition={{ ...EASE_SLOW, delay: index * 0.1 }}
                   style={{
                     height: 3,
