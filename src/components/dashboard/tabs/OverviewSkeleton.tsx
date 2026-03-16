@@ -6,7 +6,7 @@ import { DataCard } from "@/components";
 export function OverviewSkeleton() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Section 1 — Header meta (name, headline, last captured) */}
+      {/* Section 1 — Header meta (name, headline, last captured, refresh) */}
       <div
         style={{
           display: "flex",
@@ -23,6 +23,7 @@ export function OverviewSkeleton() {
             <SkeletonBlock height={12} width={140} radius="var(--r-sm)" />
           </div>
         </div>
+        <SkeletonBlock height={28} width={110} radius="var(--r-md)" />
       </div>
 
       {/* Section 2 — Freshness pills (Overdue, Fresh, Not captured, View all) */}

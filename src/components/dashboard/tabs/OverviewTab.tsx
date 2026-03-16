@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, ChevronRight, X } from "lucide-react";
+import { AlertTriangle, ChevronRight, RotateCw, X } from "lucide-react";
 import {
   StatCard,
   DeltaBadge,
@@ -287,17 +287,22 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
             onClick={onRefresh}
             style={{
               alignSelf: "flex-start",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
               padding: "6px 12px",
               borderRadius: "var(--r-md)",
-              border: "1px dashed var(--border-subtle)",
-              background: "var(--bg-elevated)",
-              color: "var(--text-muted)",
+              border: "1px solid var(--accent-border)",
+              background: "var(--accent-dim)",
+              color: "var(--accent)",
               fontFamily: "var(--font-data)",
               fontSize: "var(--text-xs-size)",
+              fontWeight: 500,
               cursor: "pointer",
             }}
           >
-            Refresh data
+            <RotateCw size={14} />
+            <span>Refresh data</span>
           </button>
         )}
       </motion.div>
@@ -448,94 +453,280 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
       {/* Section 3 — KPI cards: row 1 Imp 7/28/90, row 2 Eng 7/28/90, row 3 Followers 7/28/90 */}
       <motion.div variants={staggerContainer} className="flex flex-col gap-4">
         {[
-          [
-            { stat: data.impressions7d, subtext: "impressions · 7 days" },
-            { stat: data.impressions28d, subtext: "impressions · 28 days" },
-            { stat: data.impressions90d, subtext: "impressions · 90 days" },
-          ],
-          [
-            { stat: data.engagements7d, subtext: "engagements · 7 days" },
-            { stat: data.engagements28d, subtext: "engagements · 28 days" },
-            { stat: data.engagements90d, subtext: "engagements · 90 days" },
-          ],
-          [
-            { stat: data.followers7d, subtext: "followers · 7 days" },
-            { stat: data.followers28d, subtext: "followers · 28 days" },
-            { stat: data.followers90d, subtext: "followers · 90 days" },
-          ],
-        ].map((row, rowIndex) => (
-          <motion.div
-            key={rowIndex}
-            variants={staggerContainer}
-            className="grid grid-cols-1 gap-4 sm:grid-cols-3"
-          >
-            {row.map((item, i) => (
-              <motion.div key={i} variants={cardEntry}>
-                {item.stat ? (
-                  <StatCard
-                    label={item.subtext}
-                    value={item.stat.display}
-                    delta={
-                      item.stat.direction === "up"
-                        ? (item.stat.deltaNumeric ?? 0)
-                        : item.stat.direction === "down"
-                          ? -(item.stat.deltaNumeric ?? 0)
-                          : item.stat.deltaNumeric ?? undefined
-                    }
-                  />
-                ) : (
-                  <article
-                    style={{
-                      background: "var(--bg-card)",
-                      border: "1px dashed var(--border-subtle)",
-                      boxShadow: "0 0 0 0px transparent",
-                      borderRadius: "var(--r-md)",
-                      padding: "20px 24px",
-                      minHeight: 120,
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: "var(--font-data)",
-                        fontSize: "var(--text-xs-size)",
-                        lineHeight: "var(--text-xs-line)",
-                        letterSpacing: "0.04em",
-                        textTransform: "uppercase",
-                        color: "var(--text-muted)",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {item.subtext}
-                    </div>
-                    <div
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        minHeight: 44,
-                      }}
-                    >
-                      <span
+          {
+            category: "Impressions",
+            cadenceLabel: "Impressions",
+            row: [
+              { stat: data.impressions7d, cadence: "7 days" },
+              { stat: data.impressions28d, cadence: "28 days" },
+              { stat: data.impressions90d, cadence: "90 days" },
+            ],
+          },
+          {
+            category: "Engagements",
+            cadenceLabel: "Engagements",
+            row: [
+              { stat: data.engagements7d, cadence: "7 days" },
+              { stat: data.engagements28d, cadence: "28 days" },
+              { stat: data.engagements90d, cadence: "90 days" },
+            ],
+          },
+          {
+            category: "Followers",
+            cadenceLabel: "Followers",
+            row: [
+              { stat: data.followers7d, cadence: "7 days" },
+              { stat: data.followers28d, cadence: "28 days" },
+              { stat: data.followers90d, cadence: "90 days" },
+            ],
+          },
+        ].map(({ category, cadenceLabel, row }, rowIndex) => {
+          const isFollowers = category === "Followers";
+
+          if (isFollowers) {
+            return (
+              <div
+                key={rowIndex}
+                style={{ display: "flex", flexDirection: "column", gap: 6 }}
+              >
+                <div
+                  style={{
+                    fontFamily: "var(--font-data)",
+                    fontSize: "var(--text-2xs-size)",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "var(--text-muted)",
+                  }}
+                >
+                  Followers
+                </div>
+                <motion.div
+                  variants={staggerContainer}
+                  className="grid grid-cols-1 gap-4 sm:grid-cols-4"
+                >
+                  <motion.div variants={cardEntry} className="sm:col-span-1">
+                    {data.followers ? (
+                      <StatCard
+                        label="Followers · total"
+                        value={data.followers.display}
+                        delta={
+                          data.followers.direction === "up"
+                            ? (data.followers.deltaNumeric ?? 0)
+                            : data.followers.direction === "down"
+                              ? -(data.followers.deltaNumeric ?? 0)
+                              : data.followers.deltaNumeric ?? undefined
+                        }
+                      />
+                    ) : (
+                      <article
                         style={{
-                          fontFamily: "var(--font-data)",
-                          fontSize: "var(--text-sm-size)",
-                          lineHeight: "var(--text-sm-line)",
-                          color: "var(--text-disabled)",
-                          letterSpacing: "0.02em",
+                          background: "var(--bg-card)",
+                          border: "1px dashed var(--border-subtle)",
+                          boxShadow: "0 0 0 0px transparent",
+                          borderRadius: "var(--r-md)",
+                          padding: "20px 24px",
+                          minHeight: 120,
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
-                        No data
-                      </span>
-                    </div>
-                    <div style={{ marginTop: "8px", minHeight: 24 }} />
-                  </article>
-                )}
+                        <div
+                          style={{
+                            fontFamily: "var(--font-data)",
+                            fontSize: "var(--text-xs-size)",
+                            lineHeight: "var(--text-xs-line)",
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            color: "var(--text-muted)",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          followers · total
+                        </div>
+                        <div
+                          style={{
+                            flex: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            minHeight: 44,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: "var(--font-data)",
+                              fontSize: "var(--text-sm-size)",
+                              lineHeight: "var(--text-sm-line)",
+                              color: "var(--text-disabled)",
+                              letterSpacing: "0.02em",
+                            }}
+                          >
+                            No data
+                          </span>
+                        </div>
+                        <div style={{ marginTop: "8px", minHeight: 24 }} />
+                      </article>
+                    )}
+                  </motion.div>
+
+                  {row.map((item, i) => (
+                    <motion.div key={i} variants={cardEntry}>
+                      {item.stat ? (
+                        <StatCard
+                          label={item.cadence}
+                          value={item.stat.delta ?? "—"}
+                          delta={
+                            item.stat.direction === "up"
+                              ? (item.stat.deltaNumeric ?? 0)
+                              : item.stat.direction === "down"
+                                ? -(item.stat.deltaNumeric ?? 0)
+                                : item.stat.deltaNumeric ?? undefined
+                          }
+                        />
+                      ) : (
+                        <article
+                          style={{
+                            background: "var(--bg-card)",
+                            border: "1px dashed var(--border-subtle)",
+                            boxShadow: "0 0 0 0px transparent",
+                            borderRadius: "var(--r-md)",
+                            padding: "20px 24px",
+                            minHeight: 120,
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontFamily: "var(--font-data)",
+                              fontSize: "var(--text-xs-size)",
+                              lineHeight: "var(--text-xs-line)",
+                              letterSpacing: "0.04em",
+                              textTransform: "uppercase",
+                              color: "var(--text-muted)",
+                              marginBottom: "4px",
+                            }}
+                          >
+                            {`followers · ${item.cadence}`}
+                          </div>
+                          <div
+                            style={{
+                              flex: 1,
+                              display: "flex",
+                              alignItems: "center",
+                              minHeight: 44,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: "var(--font-data)",
+                                fontSize: "var(--text-sm-size)",
+                                lineHeight: "var(--text-sm-line)",
+                                color: "var(--text-disabled)",
+                                letterSpacing: "0.02em",
+                              }}
+                            >
+                              No data
+                            </span>
+                          </div>
+                          <div style={{ marginTop: "8px", minHeight: 24 }} />
+                        </article>
+                      )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              key={rowIndex}
+              style={{ display: "flex", flexDirection: "column", gap: 6 }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-data)",
+                  fontSize: "var(--text-2xs-size)",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "var(--text-muted)",
+                }}
+              >
+                {category}
+              </div>
+              <motion.div
+                variants={staggerContainer}
+                className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+              >
+                {row.map((item, i) => (
+                  <motion.div key={i} variants={cardEntry}>
+                    {item.stat ? (
+                      <StatCard
+                        label={`${cadenceLabel} · ${item.cadence}`}
+                        value={item.stat.display}
+                        delta={
+                          item.stat.direction === "up"
+                            ? (item.stat.deltaNumeric ?? 0)
+                            : item.stat.direction === "down"
+                              ? -(item.stat.deltaNumeric ?? 0)
+                              : item.stat.deltaNumeric ?? undefined
+                        }
+                      />
+                    ) : (
+                      <article
+                        style={{
+                          background: "var(--bg-card)",
+                          border: "1px dashed var(--border-subtle)",
+                          boxShadow: "0 0 0 0px transparent",
+                          borderRadius: "var(--r-md)",
+                          padding: "20px 24px",
+                          minHeight: 120,
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontFamily: "var(--font-data)",
+                            fontSize: "var(--text-xs-size)",
+                            lineHeight: "var(--text-xs-line)",
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            color: "var(--text-muted)",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          {`${cadenceLabel.toLowerCase()} · ${item.cadence}`}
+                        </div>
+                        <div
+                          style={{
+                            flex: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            minHeight: 44,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: "var(--font-data)",
+                              fontSize: "var(--text-sm-size)",
+                              lineHeight: "var(--text-sm-line)",
+                              color: "var(--text-disabled)",
+                              letterSpacing: "0.02em",
+                            }}
+                          >
+                            No data
+                          </span>
+                        </div>
+                        <div style={{ marginTop: "8px", minHeight: 24 }} />
+                      </article>
+                    )}
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
-        ))}
+            </div>
+          );
+        })}
       </motion.div>
 
       {/* Section 4 — One row, 3 cols (40% | 20% | 40%), same height */}
