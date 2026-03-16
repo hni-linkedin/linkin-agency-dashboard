@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import { useHomeData } from "@/hooks/useHomeData";
 import { EmptyState } from "@/components";
 import { OverviewTab } from "@/components/dashboard/tabs/OverviewTab";
@@ -12,8 +12,19 @@ export default function DashboardClientPage({
   params: Promise<{ clientId: string }>;
 }) {
   const { clientId } = use(params);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { isLoading, isError, isEmpty, data, error, refetch } =
     useHomeData(clientId);
+
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   if (isLoading) return <OverviewSkeleton />;
   if (isError)
@@ -36,5 +47,7 @@ export default function DashboardClientPage({
     );
   if (!data) return null;
 
-  return <OverviewTab data={data} clientId={clientId} />;
+  return (
+    <OverviewTab data={data} clientId={clientId} onRefresh={handleRefresh} />
+  );
 }
