@@ -45,7 +45,6 @@ export interface SidebarProps {
   activeRoute: string;
   collapsed: boolean;
   onToggle: () => void;
-  user: SidebarUser;
   onSignOut: () => void;
 }
 
@@ -79,7 +78,7 @@ const NAV_TREE: {
   },
 ];
 
-export function Sidebar({ collapsed, onToggle, user, onSignOut }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, onSignOut }: SidebarProps) {
   const handleSignOut = () => {
     if (typeof window !== "undefined" && window.confirm("Sign out?")) {
       onSignOut();
@@ -145,7 +144,7 @@ export function Sidebar({ collapsed, onToggle, user, onSignOut }: SidebarProps) 
             <IconButton
               icon={
                 <motion.span
-                  animate={{ scaleX: collapsed ? -1 : 1 }}
+                  animate={{ scaleX: collapsed ? 1 : -1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   style={{ display: "inline-flex" }}
                 >

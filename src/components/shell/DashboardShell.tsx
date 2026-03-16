@@ -32,12 +32,6 @@ const DEMO_USER = {
   avatarSrc: undefined,
 };
 
-const DEMO_CREDITS = {
-  remaining: 14885,
-  limit: 15000,
-  resetsIn: "17 days",
-};
-
 export interface DashboardShellProps {
   children: React.ReactNode;
 }
@@ -121,14 +115,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
           activeRoute={pathname}
           collapsed={collapsed}
           onToggle={toggleSidebar}
-          user={DEMO_USER}
           onSignOut={handleSignOut}
         />
       )}
       <TopBar
         pageTitle={pageTitle}
         user={DEMO_USER}
-        credits={DEMO_CREDITS}
         onSearchOpen={() => setSearchOpen(true)}
         onThemeToggle={toggleTheme}
         theme={theme}

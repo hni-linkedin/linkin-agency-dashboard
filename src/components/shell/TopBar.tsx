@@ -11,16 +11,9 @@ export interface TopBarUser {
   avatarSrc?: string;
 }
 
-export interface TopBarCredits {
-  remaining: number;
-  limit: number;
-  resetsIn: string;
-}
-
 export interface TopBarProps {
   pageTitle?: string;
   user: TopBarUser;
-  credits: TopBarCredits;
   onSearchOpen: () => void;
   onThemeToggle: () => void;
   theme: "dark" | "light";
@@ -33,19 +26,14 @@ export interface TopBarProps {
 export function TopBar({
   pageTitle = "Overview",
   user,
-  credits,
   onSearchOpen,
   onThemeToggle,
   theme,
-  sidebarCollapsed: _sidebarCollapsed,
+  sidebarCollapsed,
   onSignOut,
   isMobile = false,
   onHamburgerClick,
 }: TopBarProps) {
-  const pct = credits.limit > 0 ? (credits.remaining / credits.limit) * 100 : 100;
-  const creditColor =
-    pct > 50 ? "var(--text-muted)" : pct >= 20 ? "var(--amber)" : "var(--red)";
-
   return (
     <header
       style={{
@@ -168,44 +156,18 @@ export function TopBar({
             style={{
               padding: "2px 6px",
               background: "var(--bg-card)",
-              border: "1px dashed var(--border-subtle)",
+              border: "1px solid var(--border-default)",
               borderRadius: "var(--r-sm)",
               fontFamily: "var(--font-data)",
-              fontSize: 10,
-              color: "var(--text-disabled)",
+              fontSize: 11,
+              color: "var(--text-secondary)",
+              fontWeight: 500,
             }}
           >
             ⌘K
           </kbd>
         </button>
         )}
-
-        <div
-          style={{
-            width: 1,
-            height: 20,
-            background: "var(--border-subtle)",
-            border: "none",
-          }}
-        />
-
-        <button
-          type="button"
-          onClick={() => window.location.assign("/dashboard/billing")}
-          title={`${credits.remaining.toLocaleString()} / ${credits.limit.toLocaleString()} · resets in ${credits.resetsIn}`}
-          style={{
-            fontFamily: "var(--font-data)",
-            fontSize: "var(--text-xs-size)",
-            color: creditColor,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-            animation: pct < 20 ? "pulse-dot 2s ease-in-out infinite" : undefined,
-          }}
-        >
-          {credits.remaining.toLocaleString()} credits
-        </button>
 
         <ThemeToggle theme={theme} onToggle={onThemeToggle} />
 
