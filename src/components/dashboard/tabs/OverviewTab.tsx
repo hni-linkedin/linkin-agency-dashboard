@@ -28,26 +28,40 @@ import {
 } from "@/lib/animations";
 
 const FRESHNESS_LABELS: Record<string, string> = {
-  analytics_posts_impressions_7d: "Imp · 7d",
-  analytics_posts_impressions_28d: "Imp · 28d",
-  analytics_posts_impressions_90d: "Imp · 90d",
-  analytics_posts_engagements_7d: "Eng · 7d",
-  analytics_posts_engagements_28d: "Eng · 28d",
-  analytics_posts_engagements_90d: "Eng · 90d",
-  analytics_audience: "Audience",
-  analytics_audience_7d: "Aud · 7d",
-  analytics_audience_28d: "Aud · 28d",
-  analytics_audience_90d: "Aud · 90d",
-  analytics_search_appearances: "Search · all",
-  analytics_search_appearances_where: "Search · where",
-  analytics_search_appearances_companies: "Search · companies",
-  analytics_search_appearances_titles: "Search · titles",
-  analytics_search_appearances_found_for: "Search · found for",
-  analytics_profile_views: "Views",
-  profile_main: "Profile",
+  // Profile
+  profile_main: "My Profile",
+
+  // Analytics / Posts · Impressions
+  analytics_posts_impressions_7d: "Imp · 7D",
+  analytics_posts_impressions_28d: "Imp · 28D",
+  analytics_posts_impressions_90d: "Imp · 90D",
+
+  // Analytics / Posts · Engagements
+  analytics_posts_engagements_7d: "Eng · 7D",
+  analytics_posts_engagements_28d: "Eng · 28D",
+  analytics_posts_engagements_90d: "Eng · 90D",
+
+  // Audience / Followers
+  analytics_audience_7d: "Followers · 7D",
+  analytics_audience_28d: "Followers · 28D",
+  analytics_audience_90d: "Followers · 90D",
+
+  // Audience / Demographics
+  analytics_audience_demographics: "Audience · Demographics",
+
+  // Appearances
+  analytics_search_appearances_where: "Search · Where",
+  analytics_search_appearances_companies: "Search · Companies",
+  analytics_search_appearances_titles: "Search · Titles",
+  analytics_search_appearances_found_for: "Search · Found For",
+
+  // Profile Views
+  analytics_profile_views: "Profile Viewers",
+
+  // Network
   network_connections: "Connections",
+  network_followers: "Followers",
   network_following: "Following",
-  feed: "Feed",
 };
 
 const DUE_DAYS = 7;
@@ -1189,9 +1203,9 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                   </div>
                 )}
                 {[
-                  { title: "Searcher titles", items: data.search.topTitles.slice(0, 5), showBar: true },
-                  { title: "Searcher companies", items: data.search.topCompanies.slice(0, 5), showBar: false },
-                  { title: "You appear for", items: data.search.foundFor.slice(0, 5), showBar: true },
+                  { title: "Searcher titles", items: data.search.topTitles.slice(0, 5), showBar: true as const },
+                  { title: "Searcher companies", items: data.search.topCompanies.slice(0, 5), showBar: false as const },
+                  { title: "You appear for", items: data.search.foundFor.slice(0, 5), showBar: true as const },
                 ].map((section, sectionIndex) => {
                   const total = section.items.reduce((s, x) => s + x.value, 0) || 1;
                   const isFirst = sectionIndex === 0;
@@ -1234,12 +1248,28 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                               <div
                                 key={i}
                                 style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
                                   fontFamily: "var(--font-data)",
                                   fontSize: "var(--text-sm-size)",
                                   color: "var(--text-primary)",
                                 }}
                               >
-                                {item.label}
+                                {item.image && (
+                                  <img
+                                    src={item.image}
+                                    alt={item.label}
+                                    style={{
+                                      width: 18,
+                                      height: 18,
+                                      borderRadius: 4,
+                                      objectFit: "cover",
+                                      flexShrink: 0,
+                                    }}
+                                  />
+                                )}
+                                <span>{item.label}</span>
                               </div>
                             ))}
                       </div>
