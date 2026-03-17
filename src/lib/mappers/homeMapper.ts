@@ -87,7 +87,12 @@ export type MappedHomeData = {
       comments: number;
       search: number;
     } | null;
-    topCompanies: { label: string; value: number; displayValue?: string }[];
+    topCompanies: {
+      label: string;
+      value: number;
+      displayValue?: string;
+      image?: string;
+    }[];
     topTitles: { label: string; value: number; displayValue?: string }[];
     foundFor: { label: string; value: number; displayValue?: string }[];
   } | null;
@@ -420,6 +425,7 @@ export function mapHomeData(raw: HomeData): MappedHomeData {
           topCompanies: (ns.companies ?? []).map((c) => ({
             label: c.label,
             value: 0,
+            image: c.image,
           })),
           topTitles: toPercentItems(ns.titles),
           foundFor: toPercentItems(ns.foundFor),
