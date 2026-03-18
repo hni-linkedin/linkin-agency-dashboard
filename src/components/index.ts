@@ -132,3 +132,10 @@ export type { DropdownSelectProps, DropdownOption } from "./DropdownSelect";
 
 export { Checkbox } from "./Checkbox";
 export type { CheckboxProps } from "./Checkbox";
+
+export { AudiencePersonaCard } from "./audience/AudiencePersonaCard";
+export { AudienceBarDimensionCard } from "./audience/AudienceBarDimensionCard";
+export { AudienceLocationsDimensionCard } from "./audience/AudienceLocationsDimensionCard";
+export { AudienceSeniorityDonutCard } from "./audience/AudienceSeniorityDonutCard";
+
+export { RefreshDataButton } from "./RefreshDataButton";

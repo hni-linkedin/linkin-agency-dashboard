@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, ChevronRight, RotateCw, X } from "lucide-react";
+import { AlertTriangle, ChevronRight, X } from "lucide-react";
 import {
   StatCard,
   DeltaBadge,
@@ -15,6 +15,7 @@ import {
   InsightCallout,
   SortButton,
   FreshnessTable,
+  RefreshDataButton,
 } from "@/components";
 import type { FreshnessTableRow } from "@/components";
 import type { MappedHomeData } from "@/lib/mappers/homeMapper";
@@ -107,7 +108,13 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
   const [engagementWindow, setEngagementWindow] = useState<"7d" | "28d" | "90d">("28d");
   const [topPostsSort, setTopPostsSort] = useState<"impressions" | "engagements" | "comments">("impressions");
 
-  const name = data.profile?.name ?? formatClientId(clientId);
+  const apiProfileName = data.profile?.name;
+  // If Home API doesn't provide a usable name (null/undefined/empty), keep the URL fallback.
+  // Once the key becomes a non-empty string, we show the API value.
+  const name =
+    typeof apiProfileName === "string" && apiProfileName.trim() !== ""
+      ? apiProfileName
+      : formatClientId(clientId);
   const headline = data.profile?.headline ?? null;
   const lastCapturedStr = formatLastCaptured(data.lastCapturedAt);
   // Days since last capture: derived from external time; setState deferred to avoid sync setState-in-effect
@@ -284,44 +291,42 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
               {headline}
             </p>
           )}
-          <p
-            style={{
-              fontFamily: "var(--font-data)",
-              fontSize: "var(--text-xs-size)",
-              color: isStale ? "var(--amber)" : "var(--text-muted)",
-              margin: "8px 0 0",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            {isStale && <AlertTriangle size={12} />}
-            Last captured {lastCapturedStr}
-          </p>
+          {!onRefresh && (
+            <p
+              style={{
+                fontFamily: "var(--font-data)",
+                fontSize: "var(--text-xs-size)",
+                color: isStale ? "var(--amber)" : "var(--text-muted)",
+                margin: "8px 0 0",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              {isStale && <AlertTriangle size={12} />}
+              Last captured {lastCapturedStr}
+            </p>
+          )}
         </div>
         {onRefresh && (
-          <button
-            type="button"
-            onClick={onRefresh}
-            style={{
-              alignSelf: "flex-start",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 12px",
-              borderRadius: "var(--r-md)",
-              border: "1px solid var(--accent-border)",
-              background: "var(--accent-dim)",
-              color: "var(--accent)",
-              fontFamily: "var(--font-data)",
-              fontSize: "var(--text-xs-size)",
-              fontWeight: 500,
-              cursor: "pointer",
-            }}
-          >
-            <RotateCw size={14} />
-            <span>Refresh data</span>
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+            <RefreshDataButton onClick={onRefresh} align="flex-end" />
+
+            <p
+              style={{
+                fontFamily: "var(--font-data)",
+                fontSize: "var(--text-xs-size)",
+                color: isStale ? "var(--amber)" : "var(--text-muted)",
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              {isStale && <AlertTriangle size={12} />}
+              Last captured {lastCapturedStr}
+            </p>
+          </div>
         )}
       </motion.div>
 
@@ -337,7 +342,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
             color: "var(--red)",
           }}
         >
-          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-[var(--red)]" />
+          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-(--red)" />
           <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", fontWeight: 500 }}>
             Overdue
           </span>
@@ -355,7 +360,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
             color: "var(--green)",
           }}
         >
-          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-[var(--green)]" />
+          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-(--green)" />
           <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", fontWeight: 500 }}>
             Fresh
           </span>
@@ -373,7 +378,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
             color: "var(--text-muted)",
           }}
         >
-          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-[var(--text-disabled)]" />
+          <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-(--text-disabled)" />
           <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", fontWeight: 500 }}>
             Not captured
           </span>
@@ -385,7 +390,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
           type="button"
           onClick={() => setFreshnessModalCategory("all")}
           aria-label="View all capture status"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[var(--border-subtle)] bg-transparent px-3 py-3 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-(--border-subtle) bg-transparent px-3 py-3 text-(--text-muted) transition-colors hover:bg-(--bg-elevated) hover:text-(--text-primary)"
         >
           <ChevronRight size={18} style={{ flexShrink: 0 }} />
           <span style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-xs-size)" }}>
@@ -442,7 +447,7 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                       type="button"
                       onClick={() => setFreshnessModalCategory(null)}
                       aria-label="Close"
-                      className="rounded p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+                      className="rounded p-2 text-(--text-muted) transition-colors hover:bg-(--bg-elevated) hover:text-(--text-primary)"
                     >
                       <X size={22} />
                     </button>
