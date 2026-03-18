@@ -32,6 +32,7 @@ import {
   FreshnessStrip,
   ClientSwitcher,
   SortButton,
+  DropdownSelect,
 } from "@/components";
 import type { ClientInfo } from "@/components";
 import type { PostRow } from "@/components";
@@ -180,6 +181,7 @@ export default function KitchenSinkPage() {
   const [chartKey, setChartKey] = useState(0);
   const [staggerKey, setStaggerKey] = useState(0);
   const [lastTrigger, setLastTrigger] = useState(0);
+  const [dropdownSelectValue, setDropdownSelectValue] = useState("any");
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const debouncedTrigger = useCallback((fn: () => void) => {
@@ -611,6 +613,21 @@ export default function KitchenSinkPage() {
             <p style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-xs-size)", color: "var(--text-muted)", marginBottom: "8px" }}>ClientSwitcher</p>
             <div style={{ maxWidth: 260 }}>
               <ClientSwitcher current={MOCK_CLIENT} clients={MOCK_CLIENTS} onChange={() => {}} />
+            </div>
+          </div>
+          <div style={{ marginBottom: "24px" }}>
+            <p style={{ fontFamily: "var(--font-data)", fontSize: "var(--text-xs-size)", color: "var(--text-muted)", marginBottom: "8px" }}>DropdownSelect</p>
+            <div style={{ maxWidth: 260 }}>
+              <DropdownSelect
+                ariaLabel="DropdownSelect demo"
+                value={dropdownSelectValue}
+                onChange={(v) => setDropdownSelectValue(v)}
+                options={[
+                  { value: "any", label: "Any" },
+                  { value: "success", label: "Success" },
+                  { value: "failed", label: "Failed" },
+                ]}
+              />
             </div>
           </div>
           <div>
