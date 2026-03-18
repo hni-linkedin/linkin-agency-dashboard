@@ -126,3 +126,9 @@ export type { SortButtonProps } from "./SortButton";
 
 export { ThemeScript, setTheme, getTheme } from "./ThemeScript";
 export { ThemeSwitcher } from "./ThemeSwitcher";
+
+export { DropdownSelect } from "./DropdownSelect";
+export type { DropdownSelectProps, DropdownOption } from "./DropdownSelect";
+
+export { Checkbox } from "./Checkbox";
+export type { CheckboxProps } from "./Checkbox";
