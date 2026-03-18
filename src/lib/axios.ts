@@ -25,9 +25,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   (response) => response.data,
-  (error: AxiosError<{ message?: string }>) => {
+  (error: AxiosError<{ message?: string; error?: string }>) => {
     const message =
       error.response?.data?.message ??
+      error.response?.data?.error ??
       (error.message || "Request failed");
     const statusCode = error.response?.status ?? null;
     throw new ApiError(message, statusCode);
