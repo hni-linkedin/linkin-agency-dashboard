@@ -5,9 +5,9 @@ import { createPortal } from "react-dom";
 import { ApiError } from "@/lib/axios";
 import { deleteCapture, fetchCaptures } from "@/api/captures";
 import type { CaptureDocument } from "@/types/captures";
-import { DropdownSelect, Checkbox, EmptyState, SkeletonBlock, Badge } from "@/components";
+import { DropdownSelect, Checkbox, EmptyState, SkeletonBlock, Badge, RefreshDataButton } from "@/components";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, RotateCw, Trash2, X } from "lucide-react";
+import { ExternalLink, Trash2, X } from "lucide-react";
 
 const DEFAULT_LIMIT = 10;
 
@@ -364,29 +364,7 @@ export default function CapturesClientPage({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={status === "loading"}
-          style={{
-            alignSelf: "flex-start",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "6px 12px",
-            borderRadius: "var(--r-md)",
-            border: "1px solid var(--accent-border)",
-            background: status === "loading" ? "var(--bg-elevated)" : "var(--accent-dim)",
-            color: status === "loading" ? "var(--text-muted)" : "var(--accent)",
-            fontFamily: "var(--font-data)",
-            fontSize: "var(--text-xs-size)",
-            fontWeight: 500,
-            cursor: status === "loading" ? "not-allowed" : "pointer",
-          }}
-        >
-          <RotateCw size={14} />
-          <span>Refresh data</span>
-        </button>
+        <RefreshDataButton onClick={handleRefresh} disabled={status === "loading"} />
       </div>
 
       <div
