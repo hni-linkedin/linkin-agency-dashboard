@@ -11,6 +11,7 @@ import {
   LogOut,
   Table2,
   PieChart,
+  Network,
 } from "lucide-react";
 import { Avatar, Badge } from "@/components";
 import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
@@ -49,6 +50,7 @@ export function MobileNav({ open, onClose, user, onSignOut, role = "admin" }: Mo
           { href: `/dashboard/${clientWorkspaceId}`, icon: LayoutDashboard, label: "Overview" },
           { href: `/dashboard/${clientWorkspaceId}/captures`, icon: Table2, label: "Captures" },
           { href: `/dashboard/${clientWorkspaceId}/audience`, icon: PieChart, label: "Audience" },
+          { href: `/dashboard/${clientWorkspaceId}/network`, icon: Network, label: "Network" },
         );
       } else {
         items.push(

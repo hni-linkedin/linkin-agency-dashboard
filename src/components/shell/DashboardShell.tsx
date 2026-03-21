@@ -20,6 +20,7 @@ const PAGE_TITLES: Record<string, string> = {
 function getPageTitle(pathname: string): string {
   if (pathname.endsWith("/audience")) return "Audience";
   if (pathname.endsWith("/captures")) return "Captures";
+  if (pathname.endsWith("/network")) return "Network";
   return PAGE_TITLES[pathname] ?? "Overview";
 }
 

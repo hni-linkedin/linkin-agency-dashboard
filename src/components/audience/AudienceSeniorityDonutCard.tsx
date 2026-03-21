@@ -1,22 +1,31 @@
 "use client";
 
 import type { AudiencePercentageItem } from "@/types/audience";
-import { normalizeAudiencePercentage, sortByAudiencePercentageDesc } from "@/lib/audience/percent";
+import {
+  normalizeAudiencePercentage,
+  sortByAudiencePercentageDesc,
+} from "@/lib/audience/percent";
 
 const COLORS = [
   "var(--accent)",
-  "var(--teal)",
+  "var(--chart-saves)",
   "var(--amber)",
   "var(--green)",
   "var(--red)",
 ];
 
-export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentageItem[] }) {
+export function AudienceSeniorityDonutCard({
+  items,
+}: {
+  items: AudiencePercentageItem[];
+}) {
   const sorted = sortByAudiencePercentageDesc(items);
   const visible = sorted.slice(0, 5);
   const top = visible[0] ?? null;
 
-  const normalized = visible.map((i) => normalizeAudiencePercentage(i.percentage));
+  const normalized = visible.map((i) =>
+    normalizeAudiencePercentage(i.percentage),
+  );
   const total = normalized.reduce((a, b) => a + b, 0);
 
   const size = 128;
@@ -27,13 +36,24 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
   const gap = 2;
   const circumference = 2 * Math.PI * r;
   const segments = visible.reduce<
-    Array<{ offset: number; length: number; label: string; value: number; color: string }>
+    Array<{
+      offset: number;
+      length: number;
+      label: string;
+      value: number;
+      color: string;
+    }>
   >((acc, item, idx) => {
     const value = normalized[idx] ?? 0;
     const pct = total > 0 ? value / total : 0;
-    const length = Math.max(0, pct * circumference - (idx < visible.length - 1 ? gap : 0));
+    const length = Math.max(
+      0,
+      pct * circumference - (idx < visible.length - 1 ? gap : 0),
+    );
     const offset =
-      acc.length > 0 ? acc[acc.length - 1].offset + acc[acc.length - 1].length + gap : 0;
+      acc.length > 0
+        ? acc[acc.length - 1].offset + acc[acc.length - 1].length + gap
+        : 0;
     acc.push({
       offset,
       length,
@@ -44,12 +64,14 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
     return acc;
   }, []);
 
-  const topPctText = top?.percentage ? top.percentage.replace("%", "").trim() : "0";
+  const topPctText = top?.percentage
+    ? top.percentage.replace("%", "").trim()
+    : "0";
 
   return (
     <div
       style={{
-        background: "var(--bg-surface)",
+        background: "var(--bg-card)",
         border: "1px dashed var(--border-card)",
         borderRadius: "var(--r-md)",
         padding: "1rem 1.2rem",
@@ -57,12 +79,33 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
         flexDirection: "column",
       }}
     >
-      <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 10 }}>
+      <div
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          color: "var(--text-muted)",
+          marginBottom: 10,
+        }}
+      >
         Seniority
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, justifyContent: "space-between" }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginBottom: 8,
+          justifyContent: "space-between",
+        }}
+      >
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          style={{ flexShrink: 0 }}
+        >
           <circle
             cx={cx}
             cy={cy}
@@ -91,7 +134,7 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
 
           <text
             x={cx}
-            y={cy - 10}
+            y={cy}
             textAnchor="middle"
             fontSize={22}
             fontWeight={500}
@@ -162,7 +205,16 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
         </div>
       </div>
 
-      <div style={{ marginTop: "auto", paddingTop: 8, borderTop: "1px dashed var(--border-subtle)", fontSize: 10, color: "var(--text-muted)", lineHeight: 1.6 }}>
+      <div
+        style={{
+          marginTop: "auto",
+          paddingTop: 8,
+          borderTop: "1px dashed var(--border-subtle)",
+          fontSize: 10,
+          color: "var(--text-muted)",
+          lineHeight: 1.6,
+        }}
+      >
         {visible.length >= 2 ? (
           <>
             {visible[0].title} and {visible[1].title} lead the distribution -{" "}
@@ -177,4 +229,3 @@ export function AudienceSeniorityDonutCard({ items }: { items: AudiencePercentag
     </div>
   );
 }
-

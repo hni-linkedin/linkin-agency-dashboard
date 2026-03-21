@@ -1,7 +1,10 @@
 "use client";
 
 import type { AudiencePercentageItem } from "@/types/audience";
-import { normalizeAudiencePercentage, sortByAudiencePercentageDesc } from "@/lib/audience/percent";
+import {
+  normalizeAudiencePercentage,
+  sortByAudiencePercentageDesc,
+} from "@/lib/audience/percent";
 import { AudienceLocationsMap } from "./AudienceLocationsMap";
 
 export function AudienceLocationsDimensionCard({
@@ -37,7 +40,7 @@ export function AudienceLocationsDimensionCard({
   return (
     <div
       style={{
-        background: "var(--bg-surface)",
+        background: "var(--bg-card)",
         border: "1px dashed var(--border-card)",
         borderRadius: "var(--r-md)",
         padding: 0,
@@ -46,25 +49,77 @@ export function AudienceLocationsDimensionCard({
         overflow: "hidden",
       }}
     >
-      <div style={{ padding: "1rem 1.2rem", display: "flex", flexDirection: "column" }}>
-        <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 10 }}>
+      <div
+        style={{
+          padding: "1rem 1.2rem",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 10,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--text-muted)",
+            marginBottom: 10,
+          }}
+        >
           {label}
         </div>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.15, marginBottom: 3 }}>
+        <div
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: 22,
+            fontWeight: 600,
+            color: "var(--text-primary)",
+            lineHeight: 1.15,
+            marginBottom: 3,
+          }}
+        >
           {hero?.title ?? "—"}
         </div>
         <div style={{ fontSize: 12, color: "var(--accent)", marginBottom: 10 }}>
           {hero?.percentage ?? "—"} of audience
         </div>
-        <div style={{ height: 1, background: "var(--border-subtle)", margin: "8px 0" }} />
+        <div
+          style={{
+            height: 1,
+            background: "var(--border-subtle)",
+            margin: "8px 0",
+          }}
+        />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 7, flex: 1 }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: 7, flex: 1 }}
+        >
           {sorted.slice(1, 5).map((item) => (
-            <div key={item.title} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 11, color: "var(--text-secondary)", flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={item.title}>
+            <div
+              key={item.title}
+              style={{ display: "flex", alignItems: "center", gap: 8 }}
+            >
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "var(--text-secondary)",
+                  flex: 1,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                title={item.title}
+              >
                 {item.title}
               </span>
-              <div style={{ width: 56, height: 2, background: "var(--border-subtle)", borderRadius: 2, overflow: "hidden" }}>
+              <div
+                style={{
+                  width: 56,
+                  height: 2,
+                  background: "var(--border-subtle)",
+                  borderRadius: 2,
+                  overflow: "hidden",
+                }}
+              >
                 <div
                   style={{
                     height: "100%",
@@ -74,20 +129,29 @@ export function AudienceLocationsDimensionCard({
                         6,
                         Math.round(
                           (normalizeAudiencePercentage(item.percentage) /
-                            Math.max(1, normalizeAudiencePercentage(hero?.percentage ?? "1%"))) *
+                            Math.max(
+                              1,
+                              normalizeAudiencePercentage(
+                                hero?.percentage ?? "1%",
+                              ),
+                            )) *
                             100,
                         ),
                       ),
                     )}%`,
                     borderRadius: 2,
-                    background: getHeatColor(normalizeAudiencePercentage(item.percentage)),
+                    background: getHeatColor(
+                      normalizeAudiencePercentage(item.percentage),
+                    ),
                   }}
                 />
               </div>
               <span
                 style={{
                   fontSize: 11,
-                  color: getHeatColor(normalizeAudiencePercentage(item.percentage)),
+                  color: getHeatColor(
+                    normalizeAudiencePercentage(item.percentage),
+                  ),
                   minWidth: 44,
                   textAlign: "right",
                   flexShrink: 0,
@@ -98,16 +162,34 @@ export function AudienceLocationsDimensionCard({
             </div>
           ))}
           {sorted.length <= 1 && (
-            <div style={{ fontFamily: "var(--font-data)", fontSize: 11, color: "var(--text-muted)", paddingTop: 6 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-data)",
+                fontSize: 11,
+                color: "var(--text-muted)",
+                paddingTop: 6,
+              }}
+            >
               —
             </div>
           )}
         </div>
 
-        <div style={{ marginTop: "auto", paddingTop: 8, borderTop: "1px dashed var(--border-subtle)", fontSize: 10, color: "var(--text-muted)", lineHeight: 1.6 }}>
+        <div
+          style={{
+            marginTop: "auto",
+            paddingTop: 8,
+            borderTop: "1px dashed var(--border-subtle)",
+            fontSize: 10,
+            color: "var(--text-muted)",
+            lineHeight: 1.6,
+          }}
+        >
           {insight ? (
             <>
-              <span style={{ color: "var(--accent)", fontWeight: 600 }}>{insight}</span>
+              <span style={{ color: "var(--accent)", fontWeight: 600 }}>
+                {insight}
+              </span>
             </>
           ) : (
             "—"
@@ -119,4 +201,3 @@ export function AudienceLocationsDimensionCard({
     </div>
   );
 }
-

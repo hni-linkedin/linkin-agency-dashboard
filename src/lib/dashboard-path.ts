@@ -1,5 +1,5 @@
 /** Static segments under `/dashboard/*` that are not a client workspace id */
-const RESERVED_DASHBOARD_SEGMENTS = new Set(["managers", "clients"]);
+const RESERVED_DASHBOARD_SEGMENTS = new Set(["managers", "clients", "network"]);
 
 /**
  * When pathname is `/dashboard/:id/...` and `:id` is not a reserved segment, returns that id (e.g. `nishb`, `cli_abc`).
