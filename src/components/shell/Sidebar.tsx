@@ -14,6 +14,7 @@ import {
   Table2,
   PieChart,
   Network,
+  Contact,
 } from "lucide-react";
 import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
 import { IconButton, Tooltip } from "@/components";
@@ -79,6 +80,7 @@ export function Sidebar({ collapsed, onToggle, onSignOut, role = "admin" }: Side
           { href: `/dashboard/${clientWorkspaceId}/captures`, icon: Table2, label: "Captures" },
           { href: `/dashboard/${clientWorkspaceId}/audience`, icon: PieChart, label: "Audience" },
           { href: `/dashboard/${clientWorkspaceId}/network`, icon: Network, label: "Network" },
+          { href: `/dashboard/${clientWorkspaceId}/profile`, icon: Contact, label: "Profile" },
         );
       } else {
         items.push(
