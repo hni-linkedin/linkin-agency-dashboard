@@ -19,6 +19,21 @@ export function AuthShell({ children }: AuthShellProps) {
         padding: "24px",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          top: 24,
+          left: 24,
+          zIndex: 2,
+          fontFamily: "var(--font-display-outfit)",
+          fontWeight: 700,
+          fontSize: "var(--text-lg-size)",
+          color: "var(--text-primary)",
+          letterSpacing: "-0.02em",
+        }}
+      >
+        LinkinAgency
+      </div>
       {/* Grid overlay */}
       <div
         style={{

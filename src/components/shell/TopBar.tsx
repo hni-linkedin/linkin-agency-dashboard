@@ -17,8 +17,6 @@ export interface TopBarProps {
   onSearchOpen: () => void;
   onThemeToggle: () => void;
   theme: "dark" | "light";
-  sidebarCollapsed: boolean;
-  onSignOut: () => void;
   isMobile?: boolean;
   onHamburgerClick?: () => void;
 }
@@ -29,8 +27,6 @@ export function TopBar({
   onSearchOpen,
   onThemeToggle,
   theme,
-  sidebarCollapsed,
-  onSignOut,
   isMobile = false,
   onHamburgerClick,
 }: TopBarProps) {
@@ -180,7 +176,7 @@ export function TopBar({
           }}
         />
 
-        <UserMenu user={user} onSignOut={onSignOut} />
+        <UserMenu user={user} />
       </div>
     </header>
   );

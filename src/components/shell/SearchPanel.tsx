@@ -1,23 +1,21 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   LayoutDashboard,
-  FileText,
-  Network,
-  Eye,
-  Camera,
-  Layers,
-  CreditCard,
-  Settings,
+  Users,
   LogOut,
+  User,
   Sun,
   PanelLeftClose,
+  Table2,
+  PieChart,
 } from "lucide-react";
 import { EmptyState } from "@/components";
+import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
 
 type SearchItem = {
   id: string;
@@ -28,38 +26,65 @@ type SearchItem = {
   group: string;
 };
 
-const SEARCH_ITEMS: SearchItem[] = [
-  { id: "overview", icon: LayoutDashboard, title: "Overview", href: "/dashboard", group: "Pages" },
-  { id: "posts", icon: FileText, title: "Posts", href: "/dashboard/posts", group: "Pages" },
-  { id: "network", icon: Network, title: "Network", href: "/dashboard/network", group: "Pages" },
-  { id: "viewers", icon: Eye, title: "Viewers", href: "/dashboard/viewers", group: "Pages" },
-  { id: "captures", icon: Camera, title: "Captures", href: "/dashboard/captures", group: "Pages" },
-  { id: "sessions", icon: Layers, title: "Sessions", href: "/dashboard/sessions", group: "Pages" },
-  { id: "billing", icon: CreditCard, title: "Plan & Billing", href: "/dashboard/billing", group: "Pages" },
-  { id: "settings", icon: Settings, title: "Settings", href: "/dashboard/settings", group: "Pages" },
+const ACTION_ITEMS: SearchItem[] = [
   { id: "signout", icon: LogOut, title: "Sign out", action: "signOut", group: "Actions" },
   { id: "theme", icon: Sun, title: "Toggle theme", action: "toggleTheme", group: "Actions" },
   { id: "sidebar", icon: PanelLeftClose, title: "Collapse sidebar", action: "toggleSidebar", group: "Actions" },
 ];
+
+const PAGE_ITEMS_BY_ROLE: Record<"admin" | "manager" | "client", SearchItem[]> = {
+  admin: [
+    { id: "overview", icon: LayoutDashboard, title: "Overview", href: "/dashboard", group: "Pages" },
+    { id: "managers", icon: Users, title: "Managers", href: "/dashboard/managers", group: "Pages" },
+    { id: "profile", icon: User, title: "Profile", href: "/profile", group: "Pages" },
+  ],
+  manager: [
+    { id: "overview", icon: LayoutDashboard, title: "Overview", href: "/dashboard", group: "Pages" },
+    { id: "clients", icon: Users, title: "Clients", href: "/dashboard/clients", group: "Pages" },
+    { id: "profile", icon: User, title: "Profile", href: "/profile", group: "Pages" },
+  ],
+  client: [
+    { id: "overview", icon: LayoutDashboard, title: "Overview", href: "/dashboard", group: "Pages" },
+    { id: "profile", icon: User, title: "Profile", href: "/profile", group: "Pages" },
+  ],
+};
 
 export interface SearchPanelProps {
   open: boolean;
   onClose: () => void;
   onNavigate: () => void;
   onAction: (action: "signOut" | "toggleTheme" | "toggleSidebar") => void;
+  role?: "admin" | "manager" | "client";
 }
 
-export function SearchPanel({ open, onClose, onNavigate, onAction }: SearchPanelProps) {
+export function SearchPanel({ open, onClose, onNavigate, onAction, role = "admin" }: SearchPanelProps) {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const searchItems = useMemo(() => {
+    if (role === "manager") {
+      const clientWs = getClientWorkspaceIdFromPath(pathname);
+      if (clientWs) {
+        const pageItems: SearchItem[] = [
+          { id: "overview", icon: LayoutDashboard, title: "Overview", href: `/dashboard/${clientWs}`, group: "Pages" },
+          { id: "captures", icon: Table2, title: "Captures", href: `/dashboard/${clientWs}/captures`, group: "Pages" },
+          { id: "audience", icon: PieChart, title: "Audience", href: `/dashboard/${clientWs}/audience`, group: "Pages" },
+        ];
+        return [...pageItems, ...ACTION_ITEMS];
+      }
+    }
+    const pageItems = PAGE_ITEMS_BY_ROLE[role] ?? PAGE_ITEMS_BY_ROLE.admin;
+    return [...pageItems, ...ACTION_ITEMS];
+  }, [role, pathname]);
 
   const filtered = query.trim()
-    ? SEARCH_ITEMS.filter((item) =>
+    ? searchItems.filter((item) =>
         item.title.toLowerCase().includes(query.trim().toLowerCase())
       )
-    : SEARCH_ITEMS;
+    : searchItems;
 
   const { flatIndexToItem, grouped } = useMemo(() => {
     const groupedMap = filtered.reduce<Record<string, SearchItem[]>>((acc, item) => {
@@ -194,7 +219,7 @@ export function SearchPanel({ open, onClose, onNavigate, onAction }: SearchPanel
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search clients, sessions, posts..."
+            placeholder="Search pages and actions..."
             style={{
               flex: 1,
               background: "transparent",
