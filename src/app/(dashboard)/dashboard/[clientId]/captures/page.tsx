@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { ApiError } from "@/lib/axios";
 import { deleteCapture, fetchCaptures } from "@/api/captures";
 import type { CaptureDocument } from "@/types/captures";
-import { DropdownSelect, Checkbox, EmptyState, SkeletonBlock, Badge, RefreshDataButton } from "@/components";
+import { DropdownSelect, Checkbox, EmptyState, SkeletonBlock, Badge, RefreshDataButton, DataTable, type DataTableColumn } from "@/components";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Trash2, X } from "lucide-react";
 
@@ -180,7 +180,7 @@ export default function CapturesClientPage({
   // Filters (UI -> API contract)
   const [pageType, setPageType] = useState<string>("");
   const [groupByPageType, setGroupByPageType] = useState<boolean>(false);
-  const [latestOnly, setLatestOnly] = useState<boolean>(false);
+  const [latestOnly] = useState<boolean>(false);
 
   // Extra client-side filters (apply after fetch)
   const [parseSuccessFilter, setParseSuccessFilter] = useState<ParseSuccessFilter>("any");
@@ -340,6 +340,128 @@ export default function CapturesClientPage({
 
     return sorted;
   }, [items, parseSuccessFilter, sortBy, sortDir]);
+
+  const captureTableColumns: DataTableColumn<CaptureDocument>[] = useMemo(
+    () => [
+      {
+        key: "serial",
+        header: "#",
+        width: 46,
+        cellStyle: { color: "var(--text-muted)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", width: 46 },
+        render: (_, idx) => idx + 1,
+      },
+      {
+        key: "captureId",
+        header: "Capture ID",
+        cellStyle: { color: "var(--text-muted)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" },
+        render: (c) => c._id,
+      },
+      {
+        key: "pageType",
+        header: "Page type",
+        cellStyle: { whiteSpace: "nowrap" },
+        render: (c) => <PageTypePills pageType={c.pageType} />,
+      },
+      {
+        key: "capturedAt",
+        header: "Captured At",
+        cellStyle: { whiteSpace: "nowrap" },
+        render: (c) => formatDateTime(c.capturedAt),
+      },
+      {
+        key: "parse",
+        header: "Parse",
+        render: (c) => {
+          const parseBadge = parseSuccessToBadge(c.parseSuccess);
+          return <Badge label={parseBadge.label} variant={parseBadge.variant} size="sm" />;
+        },
+      },
+      {
+        key: "actions",
+        header: "Actions",
+        headerStyle: { whiteSpace: "nowrap" },
+        render: (c) => (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              type="button"
+              disabled={!c.tabUrl}
+              aria-label="Open tab"
+              onClick={() => {
+                if (!c.tabUrl) return;
+                window.open(c.tabUrl, "_blank", "noreferrer");
+              }}
+              onMouseEnter={(e) => {
+                if (!c.tabUrl) return;
+                e.currentTarget.style.background = "var(--accent-dim)";
+                e.currentTarget.style.borderColor = "var(--border-accent)";
+                e.currentTarget.style.color = "var(--accent)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.borderColor = "var(--border-subtle)";
+                e.currentTarget.style.color = "var(--accent)";
+              }}
+              style={{
+                width: 28,
+                height: 28,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+                borderRadius: "var(--r-md)",
+                border: "1px dashed var(--border-subtle)",
+                background: "transparent",
+                color: "var(--accent)",
+                cursor: c.tabUrl ? "pointer" : "not-allowed",
+                transition: "background 150ms ease, border-color 150ms ease, color 150ms ease",
+              }}
+            >
+              <ExternalLink size={15} />
+            </button>
+            <button
+              type="button"
+              aria-label="Delete capture"
+              disabled={isDeleting}
+              onClick={() => {
+                const summary = getPageTypePills(c.pageType ?? "").join(" - ");
+                const capturedAtText = formatDateTime(c.capturedAt);
+                openDeleteModal(c._id, summary, capturedAtText);
+              }}
+              onMouseEnter={(e) => {
+                if (isDeleting) return;
+                e.currentTarget.style.background = "var(--red-dim)";
+                e.currentTarget.style.borderColor = "var(--red-border)";
+                e.currentTarget.style.color = "var(--red)";
+              }}
+              onMouseLeave={(e) => {
+                if (isDeleting) return;
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.borderColor = "var(--border-subtle)";
+                e.currentTarget.style.color = "var(--red)";
+              }}
+              style={{
+                width: 28,
+                height: 28,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+                borderRadius: "var(--r-md)",
+                border: "1px dashed var(--border-subtle)",
+                background: "transparent",
+                color: "var(--red)",
+                cursor: isDeleting ? "not-allowed" : "pointer",
+                transition: "background 150ms ease, border-color 150ms ease, color 150ms ease",
+              }}
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+        ),
+      },
+    ],
+    [isDeleting],
+  );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -533,155 +655,13 @@ export default function CapturesClientPage({
         />
       ) : (
         <>
-          <div style={{ width: "100%", overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  {[
-                    "#",
-                    "Capture ID",
-                    "Page type",
-                    "Captured At",
-                    "Parse",
-                    "Actions",
-                  ].map((label) => (
-                    <th
-                      key={label}
-                      style={{
-                        textAlign: "left",
-                        padding: "8px 12px",
-                        fontFamily: "var(--font-data)",
-                        fontSize: "var(--text-2xs-size)",
-                        lineHeight: "var(--text-2xs-line)",
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        color: "var(--text-muted)",
-                        borderBottom: "1px dashed var(--border-subtle)",
-                        whiteSpace: label === "Actions" ? "nowrap" : undefined,
-                        width: label === "#" ? 46 : undefined,
-                      }}
-                    >
-                      {label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {displayedItems.map((c, idx) => {
-                  const parseBadge = parseSuccessToBadge(c.parseSuccess);
-                  return (
-                    <tr
-                      key={c._id}
-                      style={{
-                        borderBottom: "1px dashed var(--border-subtle)",
-                        transition: "background 100ms ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = "var(--bg-elevated)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      <td style={{ padding: "10px 12px", fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", color: "var(--text-muted)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap", width: 46 }}>
-                        {idx + 1}
-                      </td>
-                      <td style={{ padding: "10px 12px", fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", color: "var(--text-muted)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-                        {c._id}
-                      </td>
-                      <td style={{ padding: "10px 12px", fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", color: "var(--text-primary)", whiteSpace: "nowrap" }}>
-                        <PageTypePills pageType={c.pageType} />
-                      </td>
-                      <td style={{ padding: "10px 12px", fontFamily: "var(--font-data)", fontSize: "var(--text-sm-size)", color: "var(--text-primary)", whiteSpace: "nowrap" }}>
-                        {formatDateTime(c.capturedAt)}
-                      </td>
-                      <td style={{ padding: "10px 12px" }}>
-                        <Badge label={parseBadge.label} variant={parseBadge.variant} size="sm" />
-                      </td>
-                      <td style={{ padding: "10px 12px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <button
-                            type="button"
-                            disabled={!c.tabUrl}
-                            aria-label="Open tab"
-                            onClick={() => {
-                              if (!c.tabUrl) return;
-                              window.open(c.tabUrl, "_blank", "noreferrer");
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!c.tabUrl) return;
-                              e.currentTarget.style.background = "var(--accent-dim)";
-                              e.currentTarget.style.borderColor = "var(--border-accent)";
-                              e.currentTarget.style.color = "var(--accent)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "transparent";
-                              e.currentTarget.style.borderColor = "var(--border-subtle)";
-                              e.currentTarget.style.color = "var(--accent)";
-                            }}
-                            style={{
-                              width: 28,
-                              height: 28,
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              padding: 0,
-                              borderRadius: "var(--r-md)",
-                              border: "1px dashed var(--border-subtle)",
-                              background: "transparent",
-                              color: "var(--accent)",
-                              cursor: c.tabUrl ? "pointer" : "not-allowed",
-                              transition: "background 150ms ease, border-color 150ms ease, color 150ms ease",
-                            }}
-                          >
-                            <ExternalLink size={15} />
-                          </button>
-                          <button
-                            type="button"
-                            aria-label="Delete capture"
-                            disabled={isDeleting}
-                            onClick={() => {
-                              const summary = getPageTypePills(c.pageType ?? "").join(" - ");
-                              const capturedAtText = formatDateTime(c.capturedAt);
-                              openDeleteModal(c._id, summary, capturedAtText);
-                            }}
-                            onMouseEnter={(e) => {
-                              if (isDeleting) return;
-                              e.currentTarget.style.background = "var(--red-dim)";
-                              e.currentTarget.style.borderColor = "var(--red-border)";
-                              e.currentTarget.style.color = "var(--red)";
-                            }}
-                            onMouseLeave={(e) => {
-                              if (isDeleting) return;
-                              e.currentTarget.style.background = "transparent";
-                              e.currentTarget.style.borderColor = "var(--border-subtle)";
-                              e.currentTarget.style.color = "var(--red)";
-                            }}
-                            style={{
-                              width: 28,
-                              height: 28,
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              padding: 0,
-                              borderRadius: "var(--r-md)",
-                              border: "1px dashed var(--border-subtle)",
-                              background: "transparent",
-                              color: "var(--red)",
-                              cursor: isDeleting ? "not-allowed" : "pointer",
-                              transition: "background 150ms ease, border-color 150ms ease, color 150ms ease",
-                            }}
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            data={displayedItems}
+            columns={captureTableColumns}
+            getRowKey={(row) => row._id}
+            minWidth={900}
+            rowHover
+          />
 
           {showPagination && (
             <div
