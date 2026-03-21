@@ -14,6 +14,7 @@ import {
   Table2,
   PieChart,
   Network,
+  Contact,
 } from "lucide-react";
 import { EmptyState } from "@/components";
 import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
@@ -74,6 +75,7 @@ export function SearchPanel({ open, onClose, onNavigate, onAction, role = "admin
           { id: "captures", icon: Table2, title: "Captures", href: `/dashboard/${clientWs}/captures`, group: "Pages" },
           { id: "audience", icon: PieChart, title: "Audience", href: `/dashboard/${clientWs}/audience`, group: "Pages" },
           { id: "network", icon: Network, title: "Network", href: `/dashboard/${clientWs}/network`, group: "Pages" },
+          { id: "client-profile", icon: Contact, title: "Profile", href: `/dashboard/${clientWs}/profile`, group: "Pages" },
         ];
         return [...pageItems, ...ACTION_ITEMS];
       }
