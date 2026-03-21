@@ -8,30 +8,20 @@ import { TopBar } from "./TopBar";
 import { SearchPanel } from "./SearchPanel";
 import { MobileNav } from "./MobileNav";
 import { useMediaQuery } from "./useMediaQuery";
+import { clearAccessCookie, decodeToken, getAuthUser, getProfileName, getToken, markSignedOut, removeAuthUser, removeProfileName, removeToken } from "@/lib/auth";
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Overview",
-  "/dashboard/posts": "Posts",
-  "/dashboard/network": "Network",
-  "/dashboard/viewers": "Viewers",
-  "/dashboard/captures": "Captures",
-  "/dashboard/sessions": "Sessions",
-  "/dashboard/timeline": "Timeline",
-  "/dashboard/settings": "Settings",
-  "/dashboard/billing": "Plan & Billing",
+  "/dashboard/managers": "Managers",
+  "/dashboard/clients": "Clients",
+  "/profile": "Profile",
 };
 
 function getPageTitle(pathname: string): string {
   if (pathname.endsWith("/audience")) return "Audience";
+  if (pathname.endsWith("/captures")) return "Captures";
   return PAGE_TITLES[pathname] ?? "Overview";
 }
-
-const DEMO_USER = {
-  name: "Alex Chen",
-  email: "alex@acme.co",
-  plan: "Growth",
-  avatarSrc: undefined,
-};
 
 export interface DashboardShellProps {
   children: React.ReactNode;
@@ -45,6 +35,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [user, setUser] = useState({
+    name: "Admin User",
+    email: "admin@linkinagency.com",
+    plan: "Admin",
+    avatarSrc: undefined as string | undefined,
+  });
 
   // Restore sidebar/theme from localStorage after mount to avoid server/client HTML mismatch (hydration).
   useEffect(() => {
@@ -62,6 +58,31 @@ export function DashboardShell({ children }: DashboardShellProps) {
     localStorage.setItem("la-theme", theme);
     root.dispatchEvent(new CustomEvent("theme-change", { detail: { theme } }));
   }, [theme]);
+
+  useEffect(() => {
+    const authUser = getAuthUser();
+    const token = getToken();
+    const decoded = token ? decodeToken(token) : null;
+    const storedProfileName = getProfileName();
+
+    const id = setTimeout(() => {
+      setUser({
+        name:
+          storedProfileName ||
+          authUser?.name ||
+          decoded?.name ||
+          decoded?.email?.split("@")[0] ||
+          "Admin User",
+        email: authUser?.email || decoded?.email || "admin@linkinagency.com",
+        plan: (authUser?.role || decoded?.role)
+          ? (authUser?.role || decoded?.role || "admin").toUpperCase()
+          : "ADMIN",
+        avatarSrc: undefined,
+      });
+    }, 0);
+
+    return () => clearTimeout(id);
+  }, []);
 
   const toggleSidebar = useCallback(() => {
     setCollapsed((c) => {
@@ -94,10 +115,16 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, [toggleSidebar]);
 
   const handleSignOut = useCallback(() => {
+    removeToken();
+    removeAuthUser();
+    removeProfileName();
+    clearAccessCookie();
+    markSignedOut();
     window.location.href = "/login";
   }, []);
 
   const pageTitle = getPageTitle(pathname);
+  const role = (user.plan.toLowerCase() as "admin" | "manager" | "client") || "admin";
 
   return (
     <div
@@ -117,16 +144,15 @@ export function DashboardShell({ children }: DashboardShellProps) {
           collapsed={collapsed}
           onToggle={toggleSidebar}
           onSignOut={handleSignOut}
+          role={role}
         />
       )}
       <TopBar
         pageTitle={pageTitle}
-        user={DEMO_USER}
+        user={user}
         onSearchOpen={() => setSearchOpen(true)}
         onThemeToggle={toggleTheme}
         theme={theme}
-        sidebarCollapsed={collapsed}
-        onSignOut={handleSignOut}
         isMobile={isMobile}
         onHamburgerClick={() => setMobileNavOpen(true)}
       />
@@ -156,6 +182,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
         onNavigate={() => setSearchOpen(false)}
+        role={role}
         onAction={(action) => {
           if (action === "signOut") handleSignOut();
           if (action === "toggleTheme") toggleTheme();
@@ -167,8 +194,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <MobileNav
         open={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}
-        user={DEMO_USER}
+        user={user}
         onSignOut={handleSignOut}
+        role={role}
       />
     </div>
   );

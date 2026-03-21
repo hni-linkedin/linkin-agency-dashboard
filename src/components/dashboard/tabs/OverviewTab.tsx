@@ -1262,6 +1262,8 @@ export function OverviewTab({ data, clientId = "", onRefresh }: OverviewTabProps
                                 }}
                               >
                                 {item.image && (
+                                  // Small list avatars; next/image remote patterns would require host allowlist.
+                                  // eslint-disable-next-line @next/next/no-img-element -- dynamic external URLs
                                   <img
                                     src={item.image}
                                     alt={item.label}

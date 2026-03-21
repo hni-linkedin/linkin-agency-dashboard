@@ -1,24 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 
-function getMatches(query: string): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia(query).matches;
-}
-
+/**
+ * Hydration-safe: always `false` on server and on the first client render, then syncs from `matchMedia`.
+ * Do not use `useState(() => matchMedia...)` — on the client that initializer sees `window` and can
+ * disagree with SSR, causing layout mismatches (e.g. `DashboardShell` grid with/without sidebar).
+ */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => getMatches(query));
+  const [matches, setMatches] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const m = window.matchMedia(query);
-    const handler = () => setMatches(m.matches);
-    const id = setTimeout(() => setMatches(m.matches), 0);
-    m.addEventListener("change", handler);
-    return () => {
-      clearTimeout(id);
-      m.removeEventListener("change", handler);
-    };
+    const apply = () => setMatches(m.matches);
+    apply();
+    m.addEventListener("change", apply);
+    return () => m.removeEventListener("change", apply);
   }, [query]);
 
   return matches;

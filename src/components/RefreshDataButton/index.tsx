@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCw } from "lucide-react";
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type RefreshDataButtonProps = {
   onClick: () => void;
@@ -9,6 +9,7 @@ export type RefreshDataButtonProps = {
   loading?: boolean;
   label?: string;
   align?: "flex-start" | "flex-end";
+  icon?: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick">;
 
 export function RefreshDataButton({
@@ -17,6 +18,7 @@ export function RefreshDataButton({
   loading = false,
   label = "Refresh data",
   align = "flex-start",
+  icon,
   ...rest
 }: RefreshDataButtonProps) {
   const isLoading = loading || disabled;
@@ -43,7 +45,7 @@ export function RefreshDataButton({
       }}
       {...rest}
     >
-      <RotateCw size={14} />
+      {icon ?? <RotateCw size={14} />}
       <span>{label}</span>
     </button>
   );

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { Tooltip, Badge } from "@/components";
+import { isSidebarPathActive } from "@/lib/dashboard-path";
 
 export interface SidebarItemProps {
   href: string;
@@ -17,7 +18,7 @@ export interface SidebarItemProps {
 
 export function SidebarItem({ href, icon: Icon, label, badge, collapsed }: SidebarItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+  const isActive = isSidebarPathActive(pathname, href);
   const [hover, setHover] = useState(false);
 
   const isHover = hover && !isActive;

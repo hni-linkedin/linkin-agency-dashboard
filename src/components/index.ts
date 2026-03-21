@@ -139,3 +139,6 @@ export { AudienceLocationsDimensionCard } from "./audience/AudienceLocationsDime
 export { AudienceSeniorityDonutCard } from "./audience/AudienceSeniorityDonutCard";
 
 export { RefreshDataButton } from "./RefreshDataButton";
+
+export { DataTable } from "./DataTable";
+export type { DataTableProps, DataTableColumn } from "./DataTable";

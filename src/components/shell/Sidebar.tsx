@@ -1,21 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
   PanelLeftClose,
   PanelLeftOpen,
   LayoutDashboard,
-  FileText,
-  Network,
-  Eye,
-  Camera,
-  Layers,
-  GitCommit,
-  Settings,
-  CreditCard,
+  Users,
+  User,
   LogOut,
+  Table2,
+  PieChart,
 } from "lucide-react";
+import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
 import { IconButton, Tooltip } from "@/components";
 import { SidebarGroup } from "./SidebarGroup";
 import { SidebarItem } from "./SidebarItem";
@@ -46,6 +45,7 @@ export interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   onSignOut: () => void;
+  role?: "admin" | "manager" | "client";
 }
 
 const NAV_TREE: {
@@ -53,32 +53,54 @@ const NAV_TREE: {
   items: { href: string; icon: LucideIcon; label: string; badge?: string }[];
 }[] = [
   {
-    label: "WORKSPACE",
+    label: "ADMIN",
     items: [
       { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
-      { href: "/dashboard/posts", icon: FileText, label: "Posts" },
-      { href: "/dashboard/network", icon: Network, label: "Network" },
-      { href: "/dashboard/viewers", icon: Eye, label: "Viewers" },
-    ],
-  },
-  {
-    label: "OPERATIONS",
-    items: [
-      { href: "/dashboard/captures", icon: Camera, label: "Captures" },
-      { href: "/dashboard/sessions", icon: Layers, label: "Sessions" },
-      { href: "/dashboard/timeline", icon: GitCommit, label: "Timeline" },
-    ],
-  },
-  {
-    label: "ACCOUNT",
-    items: [
-      { href: "/dashboard/settings", icon: Settings, label: "Settings" },
-      { href: "/dashboard/billing", icon: CreditCard, label: "Plan & Billing", badge: "Growth" },
+      { href: "/dashboard/managers", icon: Users, label: "Managers" },
+      { href: "/profile", icon: User, label: "Profile" },
     ],
   },
 ];
 
-export function Sidebar({ collapsed, onToggle, onSignOut }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, onSignOut, role = "admin" }: SidebarProps) {
+  const pathname = usePathname();
+
+  const navTree: {
+    label: string;
+    items: { href: string; icon: LucideIcon; label: string; badge?: string }[];
+  }[] = useMemo(() => {
+    if (role === "manager") {
+      const clientWorkspaceId = getClientWorkspaceIdFromPath(pathname);
+      const items: { href: string; icon: LucideIcon; label: string; badge?: string }[] = [];
+      if (clientWorkspaceId) {
+        items.push(
+          { href: `/dashboard/${clientWorkspaceId}`, icon: LayoutDashboard, label: "Overview" },
+          { href: `/dashboard/${clientWorkspaceId}/captures`, icon: Table2, label: "Captures" },
+          { href: `/dashboard/${clientWorkspaceId}/audience`, icon: PieChart, label: "Audience" },
+        );
+      } else {
+        items.push(
+          { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+          { href: "/dashboard/clients", icon: Users, label: "Clients" },
+          { href: "/profile", icon: User, label: "Profile" },
+        );
+      }
+      return [{ label: "MANAGER", items }];
+    }
+    if (role === "client") {
+      return [
+        {
+          label: "CLIENT",
+          items: [
+            { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+            { href: "/profile", icon: User, label: "Profile" },
+          ],
+        },
+      ];
+    }
+    return NAV_TREE;
+  }, [role, pathname]);
+
   const handleSignOut = () => {
     if (typeof window !== "undefined" && window.confirm("Sign out?")) {
       onSignOut();
@@ -161,7 +183,7 @@ export function Sidebar({ collapsed, onToggle, onSignOut }: SidebarProps) {
 
       {/* Nav */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "8px 0", scrollbarWidth: "thin" }}>
-        {NAV_TREE.map((group, index) => (
+        {navTree.map((group, index) => (
           <div key={group.label}>
             <SidebarGroup label={group.label} collapsed={collapsed}>
               {group.items.map((item) => (
@@ -175,7 +197,7 @@ export function Sidebar({ collapsed, onToggle, onSignOut }: SidebarProps) {
                 />
               ))}
             </SidebarGroup>
-            {index < NAV_TREE.length - 1 && (
+            {index < navTree.length - 1 && (
               <div
                 style={{
                   borderBottom: "1px dashed var(--border-subtle)",

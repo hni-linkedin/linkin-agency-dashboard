@@ -48,7 +48,6 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
           setStatus("success");
         } catch (e) {
           // Surface mapper issues in devtools so we can debug shape mismatches.
-          // eslint-disable-next-line no-console
           console.error("[mapHomeData error]", e, raw);
           setError("Failed to map dashboard data");
           setData(null);
@@ -57,7 +56,6 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
       })
       .catch((e) => {
         if (ignore) return;
-        // eslint-disable-next-line no-console
         console.error("[useHomeData fetch error]", e);
         const message =
           e instanceof ApiError ? e.message : "Something went wrong";
@@ -84,14 +82,12 @@ export function useHomeData(clientId: string | null): UseHomeDataReturn {
         setData(mapped);
         setStatus("success");
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error("[mapHomeData error - refetch]", e, raw);
         setError("Failed to map dashboard data");
         setData(null);
         setStatus("error");
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error("[useHomeData fetch error - refetch]", e);
       const message =
         e instanceof ApiError ? e.message : "Something went wrong";

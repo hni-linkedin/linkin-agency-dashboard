@@ -1,47 +1,29 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
-  FileText,
-  Network,
-  Eye,
-  Camera,
-  Layers,
-  GitCommit,
-  Settings,
-  CreditCard,
+  Users,
+  User,
   LogOut,
+  Table2,
+  PieChart,
 } from "lucide-react";
 import { Avatar, Badge } from "@/components";
+import { getClientWorkspaceIdFromPath } from "@/lib/dashboard-path";
 import type { SidebarUser } from "./Sidebar";
 import { SidebarGroup } from "./SidebarGroup";
 
 const NAV_TREE: { label: string; items: { href: string; icon: LucideIcon; label: string; badge?: string }[] }[] = [
   {
-    label: "WORKSPACE",
+    label: "ADMIN",
     items: [
       { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
-      { href: "/dashboard/posts", icon: FileText, label: "Posts" },
-      { href: "/dashboard/network", icon: Network, label: "Network" },
-      { href: "/dashboard/viewers", icon: Eye, label: "Viewers" },
-    ],
-  },
-  {
-    label: "OPERATIONS",
-    items: [
-      { href: "/dashboard/captures", icon: Camera, label: "Captures" },
-      { href: "/dashboard/sessions", icon: Layers, label: "Sessions" },
-      { href: "/dashboard/timeline", icon: GitCommit, label: "Timeline" },
-    ],
-  },
-  {
-    label: "ACCOUNT",
-    items: [
-      { href: "/dashboard/settings", icon: Settings, label: "Settings" },
-      { href: "/dashboard/billing", icon: CreditCard, label: "Plan & Billing", badge: "Growth" },
+      { href: "/dashboard/managers", icon: Users, label: "Managers" },
+      { href: "/profile", icon: User, label: "Profile" },
     ],
   },
 ];
@@ -51,10 +33,45 @@ export interface MobileNavProps {
   onClose: () => void;
   user: SidebarUser;
   onSignOut: () => void;
+  role?: "admin" | "manager" | "client";
 }
 
-export function MobileNav({ open, onClose, user, onSignOut }: MobileNavProps) {
+export function MobileNav({ open, onClose, user, onSignOut, role = "admin" }: MobileNavProps) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const navTree = useMemo(() => {
+    if (role === "manager") {
+      const clientWorkspaceId = getClientWorkspaceIdFromPath(pathname);
+      const items: { href: string; icon: LucideIcon; label: string; badge?: string }[] = [];
+      if (clientWorkspaceId) {
+        items.push(
+          { href: `/dashboard/${clientWorkspaceId}`, icon: LayoutDashboard, label: "Overview" },
+          { href: `/dashboard/${clientWorkspaceId}/captures`, icon: Table2, label: "Captures" },
+          { href: `/dashboard/${clientWorkspaceId}/audience`, icon: PieChart, label: "Audience" },
+        );
+      } else {
+        items.push(
+          { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+          { href: "/dashboard/clients", icon: Users, label: "Clients" },
+          { href: "/profile", icon: User, label: "Profile" },
+        );
+      }
+      return [{ label: "MANAGER", items }];
+    }
+    if (role === "client") {
+      return [
+        {
+          label: "CLIENT",
+          items: [
+            { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+            { href: "/profile", icon: User, label: "Profile" },
+          ],
+        },
+      ];
+    }
+    return NAV_TREE;
+  }, [role, pathname]);
 
   const handleLink = (href: string) => {
     onClose();
@@ -97,7 +114,7 @@ export function MobileNav({ open, onClose, user, onSignOut }: MobileNavProps) {
             }}
           >
             <nav style={{ padding: "8px 0" }}>
-              {NAV_TREE.map((group) => (
+              {navTree.map((group) => (
                 <SidebarGroup key={group.label} label={group.label} collapsed={false}>
                   {group.items.map((item) => (
                     <button
