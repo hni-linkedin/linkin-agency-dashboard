@@ -18,6 +18,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Environment & API
+
+Set **`NEXT_PUBLIC_API_URL`** to your API origin (no trailing slash), e.g. `https://your-api.onrender.com`.
+
+| Environment | Browser API calls | Notes |
+|---------------|-------------------|--------|
+| **Development** (`next dev`) | Same-origin `/api/*` → Next.js **rewrites** to the backend | Avoids CORS between `localhost:3000` and `localhost:3001`. |
+| **Production** (`next build` / Vercel) | **Direct** to `NEXT_PUBLIC_API_URL` | No `/api` proxy. The API must allow **CORS** for your dashboard origin (e.g. `https://your-app.vercel.app`). |
+
+Optional: **`NEXT_PUBLIC_API_KEY`** for non-auth routes (see `src/lib/axios.ts`).
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

@@ -12,12 +12,25 @@ export class ApiError extends Error {
   }
 }
 
-// Browser requests should stay same-origin and use Next rewrites,
-// which avoids CORS preflight failures against localhost:3001.
-const baseURL =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_API_URL ?? ""
-    : "";
+const publicApiUrl = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+
+/**
+ * Base URL for axios:
+ * - **Server:** always `NEXT_PUBLIC_API_URL` (direct to the API).
+ * - **Browser (development):** `""` — same-origin `/api/*` + Next.js rewrites to the backend (avoids CORS for localhost:3000 → :3001).
+ * - **Browser (production):** `NEXT_PUBLIC_API_URL` — direct to the API; the API must allow CORS for the dashboard origin.
+ */
+function getAxiosBaseURL(): string {
+  if (typeof window === "undefined") {
+    return publicApiUrl;
+  }
+  if (process.env.NODE_ENV === "development") {
+    return "";
+  }
+  return publicApiUrl;
+}
+
+const baseURL = getAxiosBaseURL();
 const apiKey = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
 const axiosInstance = axios.create({
