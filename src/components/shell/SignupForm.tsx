@@ -34,10 +34,10 @@ const stagger = {
 export function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [nameTouched, setNameTouched] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
+  const [, setNameTouched] = useState(false);
+  const [, setEmailTouched] = useState(false);
   const [showPersonalCallout, setShowPersonalCallout] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting] = useState(false);
 
   const nameValid = name.trim().length >= 2;
   const emailValid = !!email.trim();

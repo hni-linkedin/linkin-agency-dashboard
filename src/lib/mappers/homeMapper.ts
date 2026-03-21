@@ -1,4 +1,4 @@
-import { formatNumber, formatNumberIndian } from "@/lib/formatters";
+import { formatNumberIndian } from "@/lib/formatters";
 import type {
   EngagementsSplit,
   EngagementsSummary,
@@ -489,7 +489,6 @@ export function mapHomeData(raw: HomeData): MappedHomeData {
         };
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error("[mapHomeData search section error]", e, rawSearch);
       search = null;
     }
