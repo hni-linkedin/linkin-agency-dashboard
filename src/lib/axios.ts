@@ -1,4 +1,5 @@
 import axios, { type AxiosError } from "axios";
+import { getToken } from "@/lib/auth";
 
 export class ApiError extends Error {
   constructor(
@@ -11,16 +12,38 @@ export class ApiError extends Error {
   }
 }
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "";
+// Browser requests should stay same-origin and use Next rewrites,
+// which avoids CORS preflight failures against localhost:3001.
+const baseURL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_API_URL ?? ""
+    : "";
 const apiKey = process.env.NEXT_PUBLIC_API_KEY ?? "";
 
 const axiosInstance = axios.create({
   baseURL,
   timeout: 15000,
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": apiKey,
   },
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  const url = config.url ?? "";
+  const isAuthRoute = url.startsWith("/api/auth/");
+
+  if (apiKey && !isAuthRoute) {
+    config.headers["x-api-key"] = apiKey;
+  } else if (config.headers && "x-api-key" in config.headers) {
+    delete config.headers["x-api-key"];
+  }
+
+  const token = getToken();
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 axiosInstance.interceptors.response.use(
